@@ -1,0 +1,1402 @@
+{
+  "schemaName": "roomietab",
+  "overview": "RoomieTab is a real-time roommate expense management web app for groups of up to 5 people. Built on Next.js 15 (App Router) with Supabase as the backend, it enables frictionless expense logging with flexible split rules (equal, exact, percentage, shares), tracks who paid for what, and at month-end computes the minimum number of transactions to settle all debts using a greedy net-balance algorithm.\n\nArchitecture highlights:\n- **Database**: 7 tables in a dedicated 'roomietab' PostgreSQL schema. All monetary values stored as integer cents to eliminate floating-point errors. Row-Level Security on every table ensures strict household-scoped data isolation.\n- **Auth**: Supabase Auth with email magic links (zero-friction) and Google OAuth. Guest members can join via shareable invite link without mandatory account creation.\n- **Realtime**: Supabase Realtime subscriptions on expenses and settlement_transactions tables provide live sync across all connected roommates — no manual refresh needed.\n- **API Design**: Most reads use direct Supabase client queries (protected by RLS). API routes handle complex server-side logic: settlement calculation (min-transaction algorithm), month archival, recurring expense generation, and file exports.\n- **Storage**: Supabase Storage bucket for receipt images with 5MB limit and image-only MIME type restrictions.\n- **Performance**: Next.js Server Components for fast initial loads, optimistic UI updates for instant feedback, and efficient composite indexes on high-query paths (household+date, household+month).",
+  "entities": [
+    {
+      "name": "Household",
+      "tableName": "roomietab.households",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "defaultValue": "gen_random_uuid()",
+          "description": "Primary key"
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "nullable": false,
+          "description": "Household display name e.g. Maple House"
+        },
+        {
+          "name": "invite_code",
+          "type": "text",
+          "nullable": false,
+          "description": "Unique shareable invite code for joining via link"
+        },
+        {
+          "name": "created_by",
+          "type": "uuid",
+          "nullable": false,
+          "description": "FK to auth.users — the household creator/admin"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "defaultValue": "now()",
+          "description": "Creation timestamp"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "defaultValue": "now()",
+          "description": "Last update timestamp"
+        }
+      ],
+      "relations": [
+        {
+          "type": "one-to-many",
+          "target": "Member",
+          "foreignKey": "household_id"
+        },
+        {
+          "type": "one-to-many",
+          "target": "Expense",
+          "foreignKey": "household_id"
+        },
+        {
+          "type": "one-to-many",
+          "target": "Settlement",
+          "foreignKey": "household_id"
+        },
+        {
+          "type": "one-to-many",
+          "target": "RecurringTemplate",
+          "foreignKey": "household_id"
+        }
+      ],
+      "indexes": [
+        "CREATE UNIQUE INDEX idx_households_invite_code ON roomietab.households(invite_code);"
+      ]
+    },
+    {
+      "name": "Member",
+      "tableName": "roomietab.members",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "defaultValue": "gen_random_uuid()",
+          "description": "Primary key"
+        },
+        {
+          "name": "household_id",
+          "type": "uuid",
+          "nullable": false,
+          "description": "FK to households"
+        },
+        {
+          "name": "user_id",
+          "type": "uuid",
+          "nullable": true,
+          "description": "FK to auth.users — null for guest members who haven't signed up"
+        },
+        {
+          "name": "display_name",
+          "type": "text",
+          "nullable": false,
+          "description": "Name shown in the app UI"
+        },
+        {
+          "name": "email",
+          "type": "text",
+          "nullable": true,
+          "description": "Email used for invitations"
+        },
+        {
+          "name": "avatar_url",
+          "type": "text",
+          "nullable": true,
+          "description": "Profile photo URL from Supabase Storage"
+        },
+        {
+          "name": "role",
+          "type": "text",
+          "nullable": false,
+          "defaultValue": "'member'",
+          "description": "Either 'admin' or 'member'"
+        },
+        {
+          "name": "venmo_handle",
+          "type": "text",
+          "nullable": true,
+          "description": "Venmo username for pre-filled payment deep links"
+        },
+        {
+          "name": "paypal_email",
+          "type": "text",
+          "nullable": true,
+          "description": "PayPal email for pre-filled payment deep links"
+        },
+        {
+          "name": "notification_prefs",
+          "type": "jsonb",
+          "nullable": false,
+          "defaultValue": "'{\"new_expense\": true, \"tagged\": true, \"month_end\": true, \"recurring\": false}'::jsonb",
+          "description": "Push notification toggle preferences"
+        },
+        {
+          "name": "is_active",
+          "type": "boolean",
+          "nullable": false,
+          "defaultValue": "true",
+          "description": "Soft-delete flag for removed members"
+        },
+        {
+          "name": "joined_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "defaultValue": "now()",
+          "description": "When member joined the household"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "defaultValue": "now()",
+          "description": "Last update timestamp"
+        }
+      ],
+      "relations": [
+        {
+          "type": "one-to-many",
+          "target": "Expense",
+          "foreignKey": "paid_by_member_id"
+        },
+        {
+          "type": "one-to-many",
+          "target": "ExpenseSplit",
+          "foreignKey": "member_id"
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_members_household_id ON roomietab.members(household_id);",
+        "CREATE INDEX idx_members_user_id ON roomietab.members(user_id);",
+        "CREATE UNIQUE INDEX idx_members_household_user ON roomietab.members(household_id, user_id) WHERE user_id IS NOT NULL;"
+      ]
+    },
+    {
+      "name": "Expense",
+      "tableName": "roomietab.expenses",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "defaultValue": "gen_random_uuid()",
+          "description": "Primary key"
+        },
+        {
+          "name": "household_id",
+          "type": "uuid",
+          "nullable": false,
+          "description": "FK to households"
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "nullable": false,
+          "description": "Short expense label e.g. 'Whole Foods run'"
+        },
+        {
+          "name": "amount_cents",
+          "type": "integer",
+          "nullable": false,
+          "description": "Total amount in cents (integer) to eliminate floating-point rounding errors"
+        },
+        {
+          "name": "category",
+          "type": "text",
+          "nullable": false,
+          "defaultValue": "'other'",
+          "description": "One of: rent, utilities, groceries, dining, subscriptions, transport, household, other"
+        },
+        {
+          "name": "split_type",
+          "type": "text",
+          "nullable": false,
+          "defaultValue": "'equal'",
+          "description": "Split method: equal, exact, percentage, shares"
+        },
+        {
+          "name": "paid_by_member_id",
+          "type": "uuid",
+          "nullable": false,
+          "description": "FK to the member who paid this expense"
+        },
+        {
+          "name": "expense_date",
+          "type": "date",
+          "nullable": false,
+          "defaultValue": "CURRENT_DATE",
+          "description": "Date the expense occurred"
+        },
+        {
+          "name": "receipt_url",
+          "type": "text",
+          "nullable": true,
+          "description": "URL to receipt image stored in Supabase Storage"
+        },
+        {
+          "name": "is_recurring",
+          "type": "boolean",
+          "nullable": false,
+          "defaultValue": "false",
+          "description": "Flag indicating if this was auto-generated from a recurring template"
+        },
+        {
+          "name": "recurring_day",
+          "type": "integer",
+          "nullable": true,
+          "description": "Day of month for display purposes (1-31)"
+        },
+        {
+          "name": "recurring_template_id",
+          "type": "uuid",
+          "nullable": true,
+          "description": "FK to the recurring_templates row that generated this"
+        },
+        {
+          "name": "is_deleted",
+          "type": "boolean",
+          "nullable": false,
+          "defaultValue": "false",
+          "description": "Soft-delete flag — deleted expenses hidden from UI but kept for audit"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "defaultValue": "now()",
+          "description": "Creation timestamp"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "defaultValue": "now()",
+          "description": "Last update timestamp"
+        }
+      ],
+      "relations": [
+        {
+          "type": "one-to-many",
+          "target": "ExpenseSplit",
+          "foreignKey": "expense_id"
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_expenses_household_id ON roomietab.expenses(household_id);",
+        "CREATE INDEX idx_expenses_paid_by ON roomietab.expenses(paid_by_member_id);",
+        "CREATE INDEX idx_expenses_household_date ON roomietab.expenses(household_id, expense_date DESC) WHERE is_deleted = false;",
+        "CREATE INDEX idx_expenses_household_month ON roomietab.expenses(household_id, date_trunc('month', expense_date)) WHERE is_deleted = false;",
+        "CREATE INDEX idx_expenses_category ON roomietab.expenses(household_id, category) WHERE is_deleted = false;"
+      ]
+    },
+    {
+      "name": "ExpenseSplit",
+      "tableName": "roomietab.expense_splits",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "defaultValue": "gen_random_uuid()",
+          "description": "Primary key"
+        },
+        {
+          "name": "expense_id",
+          "type": "uuid",
+          "nullable": false,
+          "description": "FK to the parent expense"
+        },
+        {
+          "name": "member_id",
+          "type": "uuid",
+          "nullable": false,
+          "description": "FK to the member who owes this share"
+        },
+        {
+          "name": "amount_cents",
+          "type": "integer",
+          "nullable": false,
+          "description": "This member's share in cents"
+        },
+        {
+          "name": "percentage",
+          "type": "numeric(5,2)",
+          "nullable": true,
+          "description": "Percentage value if split_type is percentage"
+        },
+        {
+          "name": "shares",
+          "type": "integer",
+          "nullable": true,
+          "description": "Number of shares if split_type is shares"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "defaultValue": "now()",
+          "description": "Creation timestamp"
+        }
+      ],
+      "relations": [],
+      "indexes": [
+        "CREATE INDEX idx_splits_expense_id ON roomietab.expense_splits(expense_id);",
+        "CREATE INDEX idx_splits_member_id ON roomietab.expense_splits(member_id);",
+        "CREATE UNIQUE INDEX idx_splits_expense_member ON roomietab.expense_splits(expense_id, member_id);"
+      ]
+    },
+    {
+      "name": "RecurringTemplate",
+      "tableName": "roomietab.recurring_templates",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "defaultValue": "gen_random_uuid()",
+          "description": "Primary key"
+        },
+        {
+          "name": "household_id",
+          "type": "uuid",
+          "nullable": false,
+          "description": "FK to households"
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "nullable": false,
+          "description": "Expense description template e.g. 'Netflix'"
+        },
+        {
+          "name": "amount_cents",
+          "type": "integer",
+          "nullable": false,
+          "description": "Amount in cents"
+        },
+        {
+          "name": "category",
+          "type": "text",
+          "nullable": false,
+          "description": "Expense category"
+        },
+        {
+          "name": "split_type",
+          "type": "text",
+          "nullable": false,
+          "defaultValue": "'equal'",
+          "description": "Split method"
+        },
+        {
+          "name": "paid_by_member_id",
+          "type": "uuid",
+          "nullable": false,
+          "description": "FK to default payer member"
+        },
+        {
+          "name": "split_config",
+          "type": "jsonb",
+          "nullable": false,
+          "defaultValue": "'[]'::jsonb",
+          "description": "JSON array of split member configs: [{memberId, amountCents?, percentage?, shares?}]"
+        },
+        {
+          "name": "day_of_month",
+          "type": "integer",
+          "nullable": false,
+          "description": "Day of month to auto-create expense (1-31)"
+        },
+        {
+          "name": "is_active",
+          "type": "boolean",
+          "nullable": false,
+          "defaultValue": "true",
+          "description": "Whether template is active (soft-delete)"
+        },
+        {
+          "name": "last_generated_at",
+          "type": "timestamptz",
+          "nullable": true,
+          "description": "Timestamp of last auto-generated expense"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "defaultValue": "now()",
+          "description": "Creation timestamp"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "defaultValue": "now()",
+          "description": "Last update timestamp"
+        }
+      ],
+      "relations": [],
+      "indexes": [
+        "CREATE INDEX idx_recurring_household ON roomietab.recurring_templates(household_id);",
+        "CREATE INDEX idx_recurring_active_day ON roomietab.recurring_templates(day_of_month) WHERE is_active = true;"
+      ]
+    },
+    {
+      "name": "Settlement",
+      "tableName": "roomietab.settlements",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "defaultValue": "gen_random_uuid()",
+          "description": "Primary key"
+        },
+        {
+          "name": "household_id",
+          "type": "uuid",
+          "nullable": false,
+          "description": "FK to households"
+        },
+        {
+          "name": "month",
+          "type": "date",
+          "nullable": false,
+          "description": "First day of the settlement month (e.g. 2025-02-01)"
+        },
+        {
+          "name": "is_archived",
+          "type": "boolean",
+          "nullable": false,
+          "defaultValue": "false",
+          "description": "Whether the month has been fully archived/settled"
+        },
+        {
+          "name": "archived_at",
+          "type": "timestamptz",
+          "nullable": true,
+          "description": "When the month was archived"
+        },
+        {
+          "name": "archived_by",
+          "type": "uuid",
+          "nullable": true,
+          "description": "FK to member who performed the archive action"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "defaultValue": "now()",
+          "description": "Creation timestamp"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "defaultValue": "now()",
+          "description": "Last update timestamp"
+        }
+      ],
+      "relations": [
+        {
+          "type": "one-to-many",
+          "target": "SettlementTransaction",
+          "foreignKey": "settlement_id"
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_settlements_household ON roomietab.settlements(household_id);",
+        "CREATE UNIQUE INDEX idx_settlements_household_month ON roomietab.settlements(household_id, month);"
+      ]
+    },
+    {
+      "name": "SettlementTransaction",
+      "tableName": "roomietab.settlement_transactions",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "defaultValue": "gen_random_uuid()",
+          "description": "Primary key"
+        },
+        {
+          "name": "settlement_id",
+          "type": "uuid",
+          "nullable": false,
+          "description": "FK to the parent settlement"
+        },
+        {
+          "name": "payer_member_id",
+          "type": "uuid",
+          "nullable": false,
+          "description": "FK to member who needs to pay"
+        },
+        {
+          "name": "receiver_member_id",
+          "type": "uuid",
+          "nullable": false,
+          "description": "FK to member who receives payment"
+        },
+        {
+          "name": "amount_cents",
+          "type": "integer",
+          "nullable": false,
+          "description": "Transaction amount in cents"
+        },
+        {
+          "name": "is_settled",
+          "type": "boolean",
+          "nullable": false,
+          "defaultValue": "false",
+          "description": "Whether this transaction has been completed"
+        },
+        {
+          "name": "settled_at",
+          "type": "timestamptz",
+          "nullable": true,
+          "description": "When marked as settled"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "defaultValue": "now()",
+          "description": "Creation timestamp"
+        }
+      ],
+      "relations": [],
+      "indexes": [
+        "CREATE INDEX idx_stxn_settlement ON roomietab.settlement_transactions(settlement_id);",
+        "CREATE INDEX idx_stxn_payer ON roomietab.settlement_transactions(payer_member_id);",
+        "CREATE INDEX idx_stxn_receiver ON roomietab.settlement_transactions(receiver_member_id);"
+      ]
+    }
+  ],
+  "sqlMigrations": [
+    {
+      "name": "00001_create_schema",
+      "sql": "-- Create dedicated schema for RoomieTab\nCREATE SCHEMA IF NOT EXISTS roomietab;"
+    },
+    {
+      "name": "00002_create_households",
+      "sql": "CREATE TABLE roomietab.households (\n  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),\n  name text NOT NULL,\n  invite_code text NOT NULL,\n  created_by uuid NOT NULL REFERENCES auth.users(id),\n  created_at timestamptz NOT NULL DEFAULT now(),\n  updated_at timestamptz NOT NULL DEFAULT now()\n);\n\nCREATE UNIQUE INDEX idx_households_invite_code ON roomietab.households(invite_code);"
+    },
+    {
+      "name": "00003_create_members",
+      "sql": "CREATE TABLE roomietab.members (\n  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),\n  household_id uuid NOT NULL REFERENCES roomietab.households(id) ON DELETE CASCADE,\n  user_id uuid REFERENCES auth.users(id),\n  display_name text NOT NULL,\n  email text,\n  avatar_url text,\n  role text NOT NULL DEFAULT 'member' CHECK (role IN ('admin', 'member')),\n  venmo_handle text,\n  paypal_email text,\n  notification_prefs jsonb NOT NULL DEFAULT '{\"new_expense\": true, \"tagged\": true, \"month_end\": true, \"recurring\": false}'::jsonb,\n  is_active boolean NOT NULL DEFAULT true,\n  joined_at timestamptz NOT NULL DEFAULT now(),\n  updated_at timestamptz NOT NULL DEFAULT now()\n);\n\nCREATE INDEX idx_members_household_id ON roomietab.members(household_id);\nCREATE INDEX idx_members_user_id ON roomietab.members(user_id);\nCREATE UNIQUE INDEX idx_members_household_user ON roomietab.members(household_id, user_id) WHERE user_id IS NOT NULL;"
+    },
+    {
+      "name": "00004_create_expenses",
+      "sql": "CREATE TABLE roomietab.expenses (\n  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),\n  household_id uuid NOT NULL REFERENCES roomietab.households(id) ON DELETE CASCADE,\n  description text NOT NULL,\n  amount_cents integer NOT NULL CHECK (amount_cents > 0),\n  category text NOT NULL DEFAULT 'other' CHECK (category IN ('rent', 'utilities', 'groceries', 'dining', 'subscriptions', 'transport', 'household', 'other')),\n  split_type text NOT NULL DEFAULT 'equal' CHECK (split_type IN ('equal', 'exact', 'percentage', 'shares')),\n  paid_by_member_id uuid NOT NULL REFERENCES roomietab.members(id),\n  expense_date date NOT NULL DEFAULT CURRENT_DATE,\n  receipt_url text,\n  is_recurring boolean NOT NULL DEFAULT false,\n  recurring_day integer CHECK (recurring_day >= 1 AND recurring_day <= 31),\n  recurring_template_id uuid,\n  is_deleted boolean NOT NULL DEFAULT false,\n  created_at timestamptz NOT NULL DEFAULT now(),\n  updated_at timestamptz NOT NULL DEFAULT now()\n);\n\nCREATE INDEX idx_expenses_household_id ON roomietab.expenses(household_id);\nCREATE INDEX idx_expenses_paid_by ON roomietab.expenses(paid_by_member_id);\nCREATE INDEX idx_expenses_household_date ON roomietab.expenses(household_id, expense_date DESC) WHERE is_deleted = false;\nCREATE INDEX idx_expenses_category ON roomietab.expenses(household_id, category) WHERE is_deleted = false;"
+    },
+    {
+      "name": "00005_create_expense_splits",
+      "sql": "CREATE TABLE roomietab.expense_splits (\n  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),\n  expense_id uuid NOT NULL REFERENCES roomietab.expenses(id) ON DELETE CASCADE,\n  member_id uuid NOT NULL REFERENCES roomietab.members(id),\n  amount_cents integer NOT NULL CHECK (amount_cents >= 0),\n  percentage numeric(5,2) CHECK (percentage >= 0 AND percentage <= 100),\n  shares integer CHECK (shares >= 0),\n  created_at timestamptz NOT NULL DEFAULT now()\n);\n\nCREATE INDEX idx_splits_expense_id ON roomietab.expense_splits(expense_id);\nCREATE INDEX idx_splits_member_id ON roomietab.expense_splits(member_id);\nCREATE UNIQUE INDEX idx_splits_expense_member ON roomietab.expense_splits(expense_id, member_id);"
+    },
+    {
+      "name": "00006_create_recurring_templates",
+      "sql": "CREATE TABLE roomietab.recurring_templates (\n  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),\n  household_id uuid NOT NULL REFERENCES roomietab.households(id) ON DELETE CASCADE,\n  description text NOT NULL,\n  amount_cents integer NOT NULL CHECK (amount_cents > 0),\n  category text NOT NULL CHECK (category IN ('rent', 'utilities', 'groceries', 'dining', 'subscriptions', 'transport', 'household', 'other')),\n  split_type text NOT NULL DEFAULT 'equal' CHECK (split_type IN ('equal', 'exact', 'percentage', 'shares')),\n  paid_by_member_id uuid NOT NULL REFERENCES roomietab.members(id),\n  split_config jsonb NOT NULL DEFAULT '[]'::jsonb,\n  day_of_month integer NOT NULL CHECK (day_of_month >= 1 AND day_of_month <= 31),\n  is_active boolean NOT NULL DEFAULT true,\n  last_generated_at timestamptz,\n  created_at timestamptz NOT NULL DEFAULT now(),\n  updated_at timestamptz NOT NULL DEFAULT now()\n);\n\nCREATE INDEX idx_recurring_household ON roomietab.recurring_templates(household_id);\nCREATE INDEX idx_recurring_active_day ON roomietab.recurring_templates(day_of_month) WHERE is_active = true;"
+    },
+    {
+      "name": "00007_create_settlements",
+      "sql": "CREATE TABLE roomietab.settlements (\n  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),\n  household_id uuid NOT NULL REFERENCES roomietab.households(id) ON DELETE CASCADE,\n  month date NOT NULL,\n  is_archived boolean NOT NULL DEFAULT false,\n  archived_at timestamptz,\n  archived_by uuid REFERENCES roomietab.members(id),\n  created_at timestamptz NOT NULL DEFAULT now(),\n  updated_at timestamptz NOT NULL DEFAULT now()\n);\n\nCREATE INDEX idx_settlements_household ON roomietab.settlements(household_id);\nCREATE UNIQUE INDEX idx_settlements_household_month ON roomietab.settlements(household_id, month);\n\nCREATE TABLE roomietab.settlement_transactions (\n  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),\n  settlement_id uuid NOT NULL REFERENCES roomietab.settlements(id) ON DELETE CASCADE,\n  payer_member_id uuid NOT NULL REFERENCES roomietab.members(id),\n  receiver_member_id uuid NOT NULL REFERENCES roomietab.members(id),\n  amount_cents integer NOT NULL CHECK (amount_cents > 0),\n  is_settled boolean NOT NULL DEFAULT false,\n  settled_at timestamptz,\n  created_at timestamptz NOT NULL DEFAULT now(),\n  CHECK (payer_member_id != receiver_member_id)\n);\n\nCREATE INDEX idx_stxn_settlement ON roomietab.settlement_transactions(settlement_id);\nCREATE INDEX idx_stxn_payer ON roomietab.settlement_transactions(payer_member_id);\nCREATE INDEX idx_stxn_receiver ON roomietab.settlement_transactions(receiver_member_id);"
+    },
+    {
+      "name": "00008_enable_rls",
+      "sql": "-- Enable RLS on all tables\nALTER TABLE roomietab.households ENABLE ROW LEVEL SECURITY;\nALTER TABLE roomietab.members ENABLE ROW LEVEL SECURITY;\nALTER TABLE roomietab.expenses ENABLE ROW LEVEL SECURITY;\nALTER TABLE roomietab.expense_splits ENABLE ROW LEVEL SECURITY;\nALTER TABLE roomietab.recurring_templates ENABLE ROW LEVEL SECURITY;\nALTER TABLE roomietab.settlements ENABLE ROW LEVEL SECURITY;\nALTER TABLE roomietab.settlement_transactions ENABLE ROW LEVEL SECURITY;\n\n-- Households policies\nCREATE POLICY \"Users can view households they belong to\" ON roomietab.households\n  FOR SELECT USING (\n    EXISTS (\n      SELECT 1 FROM roomietab.members\n      WHERE members.household_id = households.id\n      AND members.user_id = auth.uid()\n      AND members.is_active = true\n    )\n  );\n\nCREATE POLICY \"Authenticated users can create households\" ON roomietab.households\n  FOR INSERT WITH CHECK (auth.uid() = created_by);\n\nCREATE POLICY \"Only admin can update household\" ON roomietab.households\n  FOR UPDATE USING (\n    EXISTS (\n      SELECT 1 FROM roomietab.members\n      WHERE members.household_id = households.id\n      AND members.user_id = auth.uid()\n      AND members.role = 'admin'\n      AND members.is_active = true\n    )\n  );\n\n-- Members policies\nCREATE POLICY \"Members can view other members in their household\" ON roomietab.members\n  FOR SELECT USING (\n    EXISTS (\n      SELECT 1 FROM roomietab.members AS m\n      WHERE m.household_id = members.household_id\n      AND m.user_id = auth.uid()\n      AND m.is_active = true\n    )\n  );\n\nCREATE POLICY \"Users can insert themselves as members\" ON roomietab.members\n  FOR INSERT WITH CHECK (\n    user_id = auth.uid()\n    OR EXISTS (\n      SELECT 1 FROM roomietab.members AS m\n      WHERE m.household_id = members.household_id\n      AND m.user_id = auth.uid()\n      AND m.role = 'admin'\n    )\n  );\n\nCREATE POLICY \"Members can update their own profile\" ON roomietab.members\n  FOR UPDATE USING (user_id = auth.uid());\n\n-- Expenses policies\nCREATE POLICY \"Members can view expenses in their household\" ON roomietab.expenses\n  FOR SELECT USING (\n    EXISTS (\n      SELECT 1 FROM roomietab.members\n      WHERE members.household_id = expenses.household_id\n      AND members.user_id = auth.uid()\n      AND members.is_active = true\n    )\n  );\n\nCREATE POLICY \"Members can create expenses in their household\" ON roomietab.expenses\n  FOR INSERT WITH CHECK (\n    EXISTS (\n      SELECT 1 FROM roomietab.members\n      WHERE members.household_id = expenses.household_id\n      AND members.user_id = auth.uid()\n      AND members.is_active = true\n    )\n  );\n\nCREATE POLICY \"Members can update expenses in their household\" ON roomietab.expenses\n  FOR UPDATE USING (\n    EXISTS (\n      SELECT 1 FROM roomietab.members\n      WHERE members.household_id = expenses.household_id\n      AND members.user_id = auth.uid()\n      AND members.is_active = true\n    )\n  );\n\nCREATE POLICY \"Members can soft-delete expenses in their household\" ON roomietab.expenses\n  FOR DELETE USING (\n    EXISTS (\n      SELECT 1 FROM roomietab.members\n      WHERE members.household_id = expenses.household_id\n      AND members.user_id = auth.uid()\n      AND members.is_active = true\n    )\n  );\n\n-- Expense splits policies\nCREATE POLICY \"Members can view splits for expenses in their household\" ON roomietab.expense_splits\n  FOR SELECT USING (\n    EXISTS (\n      SELECT 1 FROM roomietab.expenses e\n      JOIN roomietab.members m ON m.household_id = e.household_id\n      WHERE e.id = expense_splits.expense_id\n      AND m.user_id = auth.uid()\n      AND m.is_active = true\n    )\n  );\n\nCREATE POLICY \"Members can create splits for expenses in their household\" ON roomietab.expense_splits\n  FOR INSERT WITH CHECK (\n    EXISTS (\n      SELECT 1 FROM roomietab.expenses e\n      JOIN roomietab.members m ON m.household_id = e.household_id\n      WHERE e.id = expense_splits.expense_id\n      AND m.user_id = auth.uid()\n      AND m.is_active = true\n    )\n  );\n\nCREATE POLICY \"Members can update splits for expenses in their household\" ON roomietab.expense_splits\n  FOR UPDATE USING (\n    EXISTS (\n      SELECT 1 FROM roomietab.expenses e\n      JOIN roomietab.members m ON m.household_id = e.household_id\n      WHERE e.id = expense_splits.expense_id\n      AND m.user_id = auth.uid()\n      AND m.is_active = true\n    )\n  );\n\nCREATE POLICY \"Members can delete splits for expenses in their household\" ON roomietab.expense_splits\n  FOR DELETE USING (\n    EXISTS (\n      SELECT 1 FROM roomietab.expenses e\n      JOIN roomietab.members m ON m.household_id = e.household_id\n      WHERE e.id = expense_splits.expense_id\n      AND m.user_id = auth.uid()\n      AND m.is_active = true\n    )\n  );\n\n-- Recurring templates policies\nCREATE POLICY \"Members can view recurring templates in their household\" ON roomietab.recurring_templates\n  FOR SELECT USING (\n    EXISTS (\n      SELECT 1 FROM roomietab.members\n      WHERE members.household_id = recurring_templates.household_id\n      AND members.user_id = auth.uid()\n      AND members.is_active = true\n    )\n  );\n\nCREATE POLICY \"Members can create recurring templates\" ON roomietab.recurring_templates\n  FOR INSERT WITH CHECK (\n    EXISTS (\n      SELECT 1 FROM roomietab.members\n      WHERE members.household_id = recurring_templates.household_id\n      AND members.user_id = auth.uid()\n      AND members.is_active = true\n    )\n  );\n\nCREATE POLICY \"Members can update recurring templates\" ON roomietab.recurring_templates\n  FOR UPDATE USING (\n    EXISTS (\n      SELECT 1 FROM roomietab.members\n      WHERE members.household_id = recurring_templates.household_id\n      AND members.user_id = auth.uid()\n      AND members.is_active = true\n    )\n  );\n\n-- Settlements policies\nCREATE POLICY \"Members can view settlements in their household\" ON roomietab.settlements\n  FOR SELECT USING (\n    EXISTS (\n      SELECT 1 FROM roomietab.members\n      WHERE members.household_id = settlements.household_id\n      AND members.user_id = auth.uid()\n      AND members.is_active = true\n    )\n  );\n\nCREATE POLICY \"Members can create settlements\" ON roomietab.settlements\n  FOR INSERT WITH CHECK (\n    EXISTS (\n      SELECT 1 FROM roomietab.members\n      WHERE members.household_id = settlements.household_id\n      AND members.user_id = auth.uid()\n      AND members.is_active = true\n    )\n  );\n\nCREATE POLICY \"Members can update settlements\" ON roomietab.settlements\n  FOR UPDATE USING (\n    EXISTS (\n      SELECT 1 FROM roomietab.members\n      WHERE members.household_id = settlements.household_id\n      AND members.user_id = auth.uid()\n      AND members.is_active = true\n    )\n  );\n\n-- Settlement transactions policies\nCREATE POLICY \"Members can view settlement transactions\" ON roomietab.settlement_transactions\n  FOR SELECT USING (\n    EXISTS (\n      SELECT 1 FROM roomietab.settlements s\n      JOIN roomietab.members m ON m.household_id = s.household_id\n      WHERE s.id = settlement_transactions.settlement_id\n      AND m.user_id = auth.uid()\n      AND m.is_active = true\n    )\n  );\n\nCREATE POLICY \"Members can create settlement transactions\" ON roomietab.settlement_transactions\n  FOR INSERT WITH CHECK (\n    EXISTS (\n      SELECT 1 FROM roomietab.settlements s\n      JOIN roomietab.members m ON m.household_id = s.household_id\n      WHERE s.id = settlement_transactions.settlement_id\n      AND m.user_id = auth.uid()\n      AND m.is_active = true\n    )\n  );\n\nCREATE POLICY \"Members can update settlement transactions\" ON roomietab.settlement_transactions\n  FOR UPDATE USING (\n    EXISTS (\n      SELECT 1 FROM roomietab.settlements s\n      JOIN roomietab.members m ON m.household_id = s.household_id\n      WHERE s.id = settlement_transactions.settlement_id\n      AND m.user_id = auth.uid()\n      AND m.is_active = true\n    )\n  );"
+    },
+    {
+      "name": "00009_enable_realtime",
+      "sql": "-- Enable Supabase Realtime for live sync tables\nALTER PUBLICATION supabase_realtime ADD TABLE roomietab.expenses;\nALTER PUBLICATION supabase_realtime ADD TABLE roomietab.settlement_transactions;"
+    },
+    {
+      "name": "00010_updated_at_triggers",
+      "sql": "-- Auto-update updated_at timestamp on row modification\nCREATE OR REPLACE FUNCTION roomietab.update_updated_at()\nRETURNS TRIGGER AS $$\nBEGIN\n  NEW.updated_at = now();\n  RETURN NEW;\nEND;\n$$ LANGUAGE plpgsql;\n\nCREATE TRIGGER set_updated_at BEFORE UPDATE ON roomietab.households\n  FOR EACH ROW EXECUTE FUNCTION roomietab.update_updated_at();\n\nCREATE TRIGGER set_updated_at BEFORE UPDATE ON roomietab.members\n  FOR EACH ROW EXECUTE FUNCTION roomietab.update_updated_at();\n\nCREATE TRIGGER set_updated_at BEFORE UPDATE ON roomietab.expenses\n  FOR EACH ROW EXECUTE FUNCTION roomietab.update_updated_at();\n\nCREATE TRIGGER set_updated_at BEFORE UPDATE ON roomietab.recurring_templates\n  FOR EACH ROW EXECUTE FUNCTION roomietab.update_updated_at();\n\nCREATE TRIGGER set_updated_at BEFORE UPDATE ON roomietab.settlements\n  FOR EACH ROW EXECUTE FUNCTION roomietab.update_updated_at();"
+    }
+  ],
+  "rlsPolicies": [
+    {
+      "table": "roomietab.households",
+      "policyName": "Users can view households they belong to",
+      "operation": "SELECT",
+      "using": "EXISTS (SELECT 1 FROM roomietab.members WHERE members.household_id = households.id AND members.user_id = auth.uid() AND members.is_active = true)"
+    },
+    {
+      "table": "roomietab.households",
+      "policyName": "Authenticated users can create households",
+      "operation": "INSERT",
+      "using": "true",
+      "withCheck": "auth.uid() = created_by"
+    },
+    {
+      "table": "roomietab.households",
+      "policyName": "Only admin can update household",
+      "operation": "UPDATE",
+      "using": "EXISTS (SELECT 1 FROM roomietab.members WHERE members.household_id = households.id AND members.user_id = auth.uid() AND members.role = 'admin' AND members.is_active = true)"
+    },
+    {
+      "table": "roomietab.members",
+      "policyName": "Members can view other members in their household",
+      "operation": "SELECT",
+      "using": "EXISTS (SELECT 1 FROM roomietab.members AS m WHERE m.household_id = members.household_id AND m.user_id = auth.uid() AND m.is_active = true)"
+    },
+    {
+      "table": "roomietab.members",
+      "policyName": "Users can insert themselves as members",
+      "operation": "INSERT",
+      "using": "true",
+      "withCheck": "user_id = auth.uid() OR EXISTS (SELECT 1 FROM roomietab.members AS m WHERE m.household_id = members.household_id AND m.user_id = auth.uid() AND m.role = 'admin')"
+    },
+    {
+      "table": "roomietab.members",
+      "policyName": "Members can update their own profile",
+      "operation": "UPDATE",
+      "using": "user_id = auth.uid()"
+    },
+    {
+      "table": "roomietab.expenses",
+      "policyName": "Members can view expenses in their household",
+      "operation": "SELECT",
+      "using": "EXISTS (SELECT 1 FROM roomietab.members WHERE members.household_id = expenses.household_id AND members.user_id = auth.uid() AND members.is_active = true)"
+    },
+    {
+      "table": "roomietab.expenses",
+      "policyName": "Members can create expenses in their household",
+      "operation": "INSERT",
+      "using": "true",
+      "withCheck": "EXISTS (SELECT 1 FROM roomietab.members WHERE members.household_id = expenses.household_id AND members.user_id = auth.uid() AND members.is_active = true)"
+    },
+    {
+      "table": "roomietab.expenses",
+      "policyName": "Members can update expenses in their household",
+      "operation": "UPDATE",
+      "using": "EXISTS (SELECT 1 FROM roomietab.members WHERE members.household_id = expenses.household_id AND members.user_id = auth.uid() AND members.is_active = true)"
+    },
+    {
+      "table": "roomietab.expenses",
+      "policyName": "Members can soft-delete expenses in their household",
+      "operation": "DELETE",
+      "using": "EXISTS (SELECT 1 FROM roomietab.members WHERE members.household_id = expenses.household_id AND members.user_id = auth.uid() AND members.is_active = true)"
+    },
+    {
+      "table": "roomietab.expense_splits",
+      "policyName": "Members can view splits for expenses in their household",
+      "operation": "SELECT",
+      "using": "EXISTS (SELECT 1 FROM roomietab.expenses e JOIN roomietab.members m ON m.household_id = e.household_id WHERE e.id = expense_splits.expense_id AND m.user_id = auth.uid() AND m.is_active = true)"
+    },
+    {
+      "table": "roomietab.expense_splits",
+      "policyName": "Members can create splits for expenses in their household",
+      "operation": "INSERT",
+      "using": "true",
+      "withCheck": "EXISTS (SELECT 1 FROM roomietab.expenses e JOIN roomietab.members m ON m.household_id = e.household_id WHERE e.id = expense_splits.expense_id AND m.user_id = auth.uid() AND m.is_active = true)"
+    },
+    {
+      "table": "roomietab.expense_splits",
+      "policyName": "Members can update splits for expenses in their household",
+      "operation": "UPDATE",
+      "using": "EXISTS (SELECT 1 FROM roomietab.expenses e JOIN roomietab.members m ON m.household_id = e.household_id WHERE e.id = expense_splits.expense_id AND m.user_id = auth.uid() AND m.is_active = true)"
+    },
+    {
+      "table": "roomietab.expense_splits",
+      "policyName": "Members can delete splits for expenses in their household",
+      "operation": "DELETE",
+      "using": "EXISTS (SELECT 1 FROM roomietab.expenses e JOIN roomietab.members m ON m.household_id = e.household_id WHERE e.id = expense_splits.expense_id AND m.user_id = auth.uid() AND m.is_active = true)"
+    },
+    {
+      "table": "roomietab.recurring_templates",
+      "policyName": "Members can view recurring templates in their household",
+      "operation": "SELECT",
+      "using": "EXISTS (SELECT 1 FROM roomietab.members WHERE members.household_id = recurring_templates.household_id AND members.user_id = auth.uid() AND members.is_active = true)"
+    },
+    {
+      "table": "roomietab.recurring_templates",
+      "policyName": "Members can create recurring templates in their household",
+      "operation": "INSERT",
+      "using": "true",
+      "withCheck": "EXISTS (SELECT 1 FROM roomietab.members WHERE members.household_id = recurring_templates.household_id AND members.user_id = auth.uid() AND members.is_active = true)"
+    },
+    {
+      "table": "roomietab.recurring_templates",
+      "policyName": "Members can update recurring templates in their household",
+      "operation": "UPDATE",
+      "using": "EXISTS (SELECT 1 FROM roomietab.members WHERE members.household_id = recurring_templates.household_id AND members.user_id = auth.uid() AND members.is_active = true)"
+    },
+    {
+      "table": "roomietab.settlements",
+      "policyName": "Members can view settlements in their household",
+      "operation": "SELECT",
+      "using": "EXISTS (SELECT 1 FROM roomietab.members WHERE members.household_id = settlements.household_id AND members.user_id = auth.uid() AND members.is_active = true)"
+    },
+    {
+      "table": "roomietab.settlements",
+      "policyName": "Members can create settlements in their household",
+      "operation": "INSERT",
+      "using": "true",
+      "withCheck": "EXISTS (SELECT 1 FROM roomietab.members WHERE members.household_id = settlements.household_id AND members.user_id = auth.uid() AND members.is_active = true)"
+    },
+    {
+      "table": "roomietab.settlements",
+      "policyName": "Members can update settlements in their household",
+      "operation": "UPDATE",
+      "using": "EXISTS (SELECT 1 FROM roomietab.members WHERE members.household_id = settlements.household_id AND members.user_id = auth.uid() AND members.is_active = true)"
+    },
+    {
+      "table": "roomietab.settlement_transactions",
+      "policyName": "Members can view settlement transactions via household",
+      "operation": "SELECT",
+      "using": "EXISTS (SELECT 1 FROM roomietab.settlements s JOIN roomietab.members m ON m.household_id = s.household_id WHERE s.id = settlement_transactions.settlement_id AND m.user_id = auth.uid() AND m.is_active = true)"
+    },
+    {
+      "table": "roomietab.settlement_transactions",
+      "policyName": "Members can create settlement transactions via household",
+      "operation": "INSERT",
+      "using": "true",
+      "withCheck": "EXISTS (SELECT 1 FROM roomietab.settlements s JOIN roomietab.members m ON m.household_id = s.household_id WHERE s.id = settlement_transactions.settlement_id AND m.user_id = auth.uid() AND m.is_active = true)"
+    },
+    {
+      "table": "roomietab.settlement_transactions",
+      "policyName": "Members can update settlement transactions via household",
+      "operation": "UPDATE",
+      "using": "EXISTS (SELECT 1 FROM roomietab.settlements s JOIN roomietab.members m ON m.household_id = s.household_id WHERE s.id = settlement_transactions.settlement_id AND m.user_id = auth.uid() AND m.is_active = true)"
+    }
+  ],
+  "apiRoutes": [
+    {
+      "method": "POST",
+      "path": "/api/households",
+      "description": "Create a new household with the authenticated user as admin. Creates household row, initial member row, and generates invite code.",
+      "authRequired": true,
+      "requestBody": "{ name: string, displayName: string }",
+      "responseType": "{ household: Household, member: Member }"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/households/[id]",
+      "description": "Update household name. Only admin members can update.",
+      "authRequired": true,
+      "requestBody": "{ name: string }",
+      "responseType": "{ household: Household }"
+    },
+    {
+      "method": "POST",
+      "path": "/api/households/[id]/join",
+      "description": "Join a household via invite code. Creates a new member record linked to the authenticated user. Enforces max 5 members.",
+      "authRequired": true,
+      "requestBody": "{ inviteCode: string, displayName: string }",
+      "responseType": "{ member: Member }"
+    },
+    {
+      "method": "POST",
+      "path": "/api/households/[id]/invite",
+      "description": "Send email invitations to roommates. Only admin can invite.",
+      "authRequired": true,
+      "requestBody": "{ emails: string[] }",
+      "responseType": "{ sent: number }"
+    },
+    {
+      "method": "POST",
+      "path": "/api/expenses",
+      "description": "Create expense with splits in a single transaction. Validates split amounts sum to total. Inserts expense + expense_splits atomically.",
+      "authRequired": true,
+      "requestBody": "{ householdId: string, description: string, amountCents: number, category: string, splitType: string, paidByMemberId: string, expenseDate: string, splits: Array<{ memberId: string, amountCents: number, percentage?: number, shares?: number }>, receiptFile?: File }",
+      "responseType": "{ expense: Expense, splits: ExpenseSplit[] }"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/expenses/[id]",
+      "description": "Update an existing expense and its splits. Deletes old splits and re-creates. Validates user is household member.",
+      "authRequired": true,
+      "requestBody": "{ description?: string, amountCents?: number, category?: string, splitType?: string, paidByMemberId?: string, expenseDate?: string, splits?: Array<{ memberId: string, amountCents: number }> }",
+      "responseType": "{ expense: Expense, splits: ExpenseSplit[] }"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/expenses/[id]",
+      "description": "Soft-delete an expense by setting is_deleted=true. Does not remove data for audit trail.",
+      "authRequired": true,
+      "responseType": "{ success: boolean }"
+    },
+    {
+      "method": "POST",
+      "path": "/api/settlements/calculate",
+      "description": "Compute minimum settlement transactions for a given household and month using greedy net-balance matching algorithm. All amounts in cents to avoid floating-point errors.",
+      "authRequired": true,
+      "requestBody": "{ householdId: string, month: string }",
+      "responseType": "{ transactions: Array<{ payerMemberId: string, receiverMemberId: string, amountCents: number }>, memberSummaries: Array<{ memberId: string, totalPaid: number, totalShare: number, netBalance: number }> }"
+    },
+    {
+      "method": "POST",
+      "path": "/api/settlements/archive",
+      "description": "Archive a month's settlement. Creates Settlement and SettlementTransaction records, marks month as archived. Only admin can archive.",
+      "authRequired": true,
+      "requestBody": "{ householdId: string, month: string, transactions: Array<{ payerMemberId: string, receiverMemberId: string, amountCents: number, isSettled: boolean }> }",
+      "responseType": "{ settlement: Settlement, transactions: SettlementTransaction[] }"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/settlements/transactions/[id]",
+      "description": "Mark a settlement transaction as settled or unsettled. Any household member can toggle.",
+      "authRequired": true,
+      "requestBody": "{ isSettled: boolean }",
+      "responseType": "{ transaction: SettlementTransaction }"
+    },
+    {
+      "method": "POST",
+      "path": "/api/recurring-templates",
+      "description": "Create a recurring expense template with split configuration.",
+      "authRequired": true,
+      "requestBody": "{ householdId: string, description: string, amountCents: number, category: string, splitType: string, paidByMemberId: string, splitConfig: object[], dayOfMonth: number }",
+      "responseType": "{ template: RecurringTemplate }"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/recurring-templates/[id]",
+      "description": "Update a recurring expense template.",
+      "authRequired": true,
+      "requestBody": "{ description?: string, amountCents?: number, category?: string, splitType?: string, paidByMemberId?: string, splitConfig?: object[], dayOfMonth?: number, isActive?: boolean }",
+      "responseType": "{ template: RecurringTemplate }"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/recurring-templates/[id]",
+      "description": "Deactivate a recurring template (soft-delete by setting is_active=false).",
+      "authRequired": true,
+      "responseType": "{ success: boolean }"
+    },
+    {
+      "method": "POST",
+      "path": "/api/recurring/generate",
+      "description": "Edge Function cron handler: auto-creates expenses from active recurring templates whose day_of_month matches today. Called daily by Supabase cron.",
+      "authRequired": true,
+      "responseType": "{ created: number }"
+    },
+    {
+      "method": "POST",
+      "path": "/api/export/csv",
+      "description": "Generate CSV export of a household's monthly expenses. Returns downloadable CSV file.",
+      "authRequired": true,
+      "requestBody": "{ householdId: string, month: string }",
+      "responseType": "text/csv (file download)"
+    },
+    {
+      "method": "POST",
+      "path": "/api/export/pdf",
+      "description": "Generate PDF summary of a household's monthly expenses and settlement. Returns downloadable PDF.",
+      "authRequired": true,
+      "requestBody": "{ householdId: string, month: string }",
+      "responseType": "application/pdf (file download)"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/members/[id]",
+      "description": "Update member profile: display name, avatar, payment handles, notification prefs.",
+      "authRequired": true,
+      "requestBody": "{ displayName?: string, avatarUrl?: string, venmoHandle?: string, paypalEmail?: string, notificationPrefs?: object }",
+      "responseType": "{ member: Member }"
+    },
+    {
+      "method": "POST",
+      "path": "/api/receipts/upload",
+      "description": "Upload a receipt image to Supabase Storage. Returns the public URL for the uploaded file.",
+      "authRequired": true,
+      "requestBody": "FormData with 'file' field (image/jpeg, image/png, image/webp)",
+      "responseType": "{ url: string }"
+    }
+  ],
+  "authConfig": {
+    "providers": [
+      "email-magic-link",
+      "google-oauth"
+    ],
+    "redirectUrls": [
+      "http://localhost:3000/auth/callback",
+      "https://roomietab.vercel.app/auth/callback",
+      "https://roomietab.app/auth/callback"
+    ],
+    "sessionStrategy": "Supabase Auth with PKCE flow. Sessions stored in secure HTTP-only cookies via @supabase/ssr. Server components use createServerClient() to read session; client components use createBrowserClient(). Auth callback handled at /auth/callback route that exchanges code for session. Magic link emails include redirect to /auth/callback. Google OAuth configured in Supabase dashboard with redirect URI. Middleware at middleware.ts refreshes session on every request to prevent expiry."
+  },
+  "realtimeSubscriptions": [
+    {
+      "table": "roomietab.expenses",
+      "events": [
+        "INSERT",
+        "UPDATE",
+        "DELETE"
+      ],
+      "description": "Live sync of expense additions, edits, and soft-deletes across all connected household members. Dashboard and Expenses List pages subscribe filtered by household_id. Enables optimistic UI rollback on server rejection."
+    },
+    {
+      "table": "roomietab.settlement_transactions",
+      "events": [
+        "INSERT",
+        "UPDATE"
+      ],
+      "description": "Real-time settlement progress: when a roommate marks a transaction as settled (is_settled toggled), all members see the update instantly on the Settlement page. Also triggers on new transactions when a month is archived."
+    }
+  ],
+  "storageBuckets": [
+    {
+      "name": "receipts",
+      "public": true,
+      "allowedMimeTypes": [
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+        "image/heic"
+      ],
+      "maxFileSize": "5MB"
+    },
+    {
+      "name": "avatars",
+      "public": true,
+      "allowedMimeTypes": [
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+      ],
+      "maxFileSize": "2MB"
+    }
+  ],
+  "projectStructure": [
+    {
+      "path": "/",
+      "description": "Root of the Next.js 15 project"
+    },
+    {
+      "path": "package.json",
+      "description": "Dependencies, scripts (dev, build, lint, type-check, db:migrate, db:types)"
+    },
+    {
+      "path": "next.config.ts",
+      "description": "Next.js configuration with image domains for Supabase Storage"
+    },
+    {
+      "path": "tailwind.config.ts",
+      "description": "Tailwind config with custom colors (indigo primary), Caveat/Inter fonts, hand-drawn shadow utilities"
+    },
+    {
+      "path": "tsconfig.json",
+      "description": "TypeScript config with strict mode, path aliases (@/*)"
+    },
+    {
+      "path": ".env.local",
+      "description": "Environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "description": "GitHub Actions CI: lint, type-check, build on push/PR"
+    },
+    {
+      "path": "middleware.ts",
+      "description": "Next.js middleware: refreshes Supabase auth session on every request, redirects unauthenticated users to /login"
+    },
+    {
+      "path": "src/app/layout.tsx",
+      "description": "Root layout: loads Inter + Caveat fonts, Toaster provider, global styles"
+    },
+    {
+      "path": "src/app/page.tsx",
+      "description": "Dashboard page (/) — Server Component fetching household data, balances, recent expenses"
+    },
+    {
+      "path": "src/app/login/page.tsx",
+      "description": "Login page with magic-link email form and Google OAuth button"
+    },
+    {
+      "path": "src/app/auth/callback/route.ts",
+      "description": "Auth callback route handler: exchanges code for session via PKCE flow"
+    },
+    {
+      "path": "src/app/onboarding/setup/page.tsx",
+      "description": "Household creation wizard: name household, set display name, invite roommates"
+    },
+    {
+      "path": "src/app/join/[code]/page.tsx",
+      "description": "Invite link landing page: displays household name, join as guest or sign up"
+    },
+    {
+      "path": "src/app/expenses/page.tsx",
+      "description": "Expenses list page with search, category filters, month navigation, date-grouped cards"
+    },
+    {
+      "path": "src/app/settle/page.tsx",
+      "description": "Settlement page: member summaries, minimum transactions, payment deep links, archive CTA"
+    },
+    {
+      "path": "src/app/settings/page.tsx",
+      "description": "Settings page: profile, household management, notification toggles, recurring expenses, export"
+    },
+    {
+      "path": "src/app/api/households/route.ts",
+      "description": "POST handler: create household + admin member in transaction"
+    },
+    {
+      "path": "src/app/api/households/[id]/route.ts",
+      "description": "PUT handler: update household name (admin only)"
+    },
+    {
+      "path": "src/app/api/households/[id]/join/route.ts",
+      "description": "POST handler: join household via invite code, enforce max 5 members"
+    },
+    {
+      "path": "src/app/api/households/[id]/invite/route.ts",
+      "description": "POST handler: send email invitations to roommates"
+    },
+    {
+      "path": "src/app/api/expenses/route.ts",
+      "description": "POST handler: create expense + splits atomically, validate split sum"
+    },
+    {
+      "path": "src/app/api/expenses/[id]/route.ts",
+      "description": "PUT/DELETE handlers: update expense+splits, soft-delete expense"
+    },
+    {
+      "path": "src/app/api/settlements/calculate/route.ts",
+      "description": "POST handler: compute min-transaction settlement via greedy net-balance algorithm"
+    },
+    {
+      "path": "src/app/api/settlements/archive/route.ts",
+      "description": "POST handler: archive month, persist settlement + transactions"
+    },
+    {
+      "path": "src/app/api/settlements/transactions/[id]/route.ts",
+      "description": "PATCH handler: toggle settlement transaction settled status"
+    },
+    {
+      "path": "src/app/api/recurring-templates/route.ts",
+      "description": "POST handler: create recurring expense template"
+    },
+    {
+      "path": "src/app/api/recurring-templates/[id]/route.ts",
+      "description": "PUT/DELETE handlers: update or deactivate recurring template"
+    },
+    {
+      "path": "src/app/api/recurring/generate/route.ts",
+      "description": "POST handler: cron endpoint to auto-create recurring expenses for today"
+    },
+    {
+      "path": "src/app/api/export/csv/route.ts",
+      "description": "POST handler: generate CSV export of monthly expenses"
+    },
+    {
+      "path": "src/app/api/export/pdf/route.ts",
+      "description": "POST handler: generate PDF summary of monthly expenses and settlement"
+    },
+    {
+      "path": "src/app/api/members/[id]/route.ts",
+      "description": "PUT handler: update member profile, payment handles, notification prefs"
+    },
+    {
+      "path": "src/app/api/receipts/upload/route.ts",
+      "description": "POST handler: upload receipt image to Supabase Storage"
+    },
+    {
+      "path": "src/components/ui/button.tsx",
+      "description": "Multi-variant Button atom with loading state, icon slot, 44px min touch target"
+    },
+    {
+      "path": "src/components/ui/input.tsx",
+      "description": "Labelled Input atom with error state, prefix/suffix slots, currency mode"
+    },
+    {
+      "path": "src/components/ui/toast.tsx",
+      "description": "Toast notification atom with variants (success/error/info/warning) and undo action"
+    },
+    {
+      "path": "src/components/ui/category-badge.tsx",
+      "description": "CategoryBadge pill with emoji, tinted background, compact mode"
+    },
+    {
+      "path": "src/components/ui/floating-action-button.tsx",
+      "description": "56px circular FAB fixed above bottom nav, triggers AddExpenseDrawer"
+    },
+    {
+      "path": "src/components/nav-bar.tsx",
+      "description": "Bottom nav (mobile) / top nav (desktop) with Home, Expenses, Settle, Settings tabs"
+    },
+    {
+      "path": "src/components/expense-card.tsx",
+      "description": "Expense row molecule: category icon, description, payer, amount, swipe actions"
+    },
+    {
+      "path": "src/components/add-expense-drawer.tsx",
+      "description": "Bottom-sheet expense entry form: amount, description, payer, split, category, save CTA"
+    },
+    {
+      "path": "src/components/balance-summary-card.tsx",
+      "description": "Member balance molecule: total paid, share, net balance with green/red coloring"
+    },
+    {
+      "path": "src/components/settlement-transaction-row.tsx",
+      "description": "Settlement row: payer→receiver arrow, amount, payment deep links, settle checkbox"
+    },
+    {
+      "path": "src/components/member-avatar-group.tsx",
+      "description": "Overlapping avatar stack with selectable toggle mode for split selection"
+    },
+    {
+      "path": "src/components/monthly-breakdown-chart.tsx",
+      "description": "SVG donut chart + category legend + member paid vs share bar chart"
+    },
+    {
+      "path": "src/lib/supabase/client.ts",
+      "description": "createBrowserClient() factory for client components"
+    },
+    {
+      "path": "src/lib/supabase/server.ts",
+      "description": "createServerClient() factory for server components and route handlers"
+    },
+    {
+      "path": "src/lib/supabase/middleware.ts",
+      "description": "Supabase middleware helper for session refresh"
+    },
+    {
+      "path": "src/lib/supabase/types.ts",
+      "description": "Auto-generated TypeScript types from Supabase schema (via supabase gen types)"
+    },
+    {
+      "path": "src/lib/settlement-algorithm.ts",
+      "description": "Greedy net-balance matching algorithm: computes minimum transactions to settle all debts. All math in integer cents."
+    },
+    {
+      "path": "src/lib/utils.ts",
+      "description": "cn() class merge utility (clsx + tailwind-merge), formatCents(), formatDate() helpers"
+    },
+    {
+      "path": "src/lib/constants.ts",
+      "description": "Category definitions with emoji/color mappings, split type options, notification pref keys"
+    },
+    {
+      "path": "src/lib/validations.ts",
+      "description": "Zod schemas for expense form, household form, member profile, settlement, recurring template"
+    },
+    {
+      "path": "src/lib/payment-links.ts",
+      "description": "Utility to generate pre-filled Venmo, PayPal, and Zelle deep link URLs with amount and recipient"
+    },
+    {
+      "path": "src/hooks/use-household.ts",
+      "description": "React hook: fetches current user's household + members via Supabase client with RLS"
+    },
+    {
+      "path": "src/hooks/use-expenses.ts",
+      "description": "React hook: fetches expenses for household+month with Supabase Realtime subscription"
+    },
+    {
+      "path": "src/hooks/use-realtime.ts",
+      "description": "Generic Supabase Realtime subscription hook with automatic cleanup"
+    },
+    {
+      "path": "src/hooks/use-optimistic-expense.ts",
+      "description": "Hook for optimistic UI: immediately adds/removes expense from local state before server confirms"
+    },
+    {
+      "path": "supabase/migrations/00001_create_schema.sql",
+      "description": "CREATE SCHEMA IF NOT EXISTS roomietab;"
+    },
+    {
+      "path": "supabase/migrations/00002_create_households.sql",
+      "description": "Create households table with invite_code unique index"
+    },
+    {
+      "path": "supabase/migrations/00003_create_members.sql",
+      "description": "Create members table with household+user composite unique index"
+    },
+    {
+      "path": "supabase/migrations/00004_create_expenses.sql",
+      "description": "Create expenses table with composite indexes on household+date and household+month"
+    },
+    {
+      "path": "supabase/migrations/00005_create_expense_splits.sql",
+      "description": "Create expense_splits table with expense+member unique constraint"
+    },
+    {
+      "path": "supabase/migrations/00006_create_recurring_templates.sql",
+      "description": "Create recurring_templates table"
+    },
+    {
+      "path": "supabase/migrations/00007_create_settlements.sql",
+      "description": "Create settlements and settlement_transactions tables"
+    },
+    {
+      "path": "supabase/migrations/00008_enable_rls.sql",
+      "description": "Enable RLS on all tables, create all access policies using auth.uid()"
+    },
+    {
+      "path": "supabase/migrations/00009_enable_realtime.sql",
+      "description": "ALTER PUBLICATION supabase_realtime ADD TABLE for expenses and settlement_transactions"
+    },
+    {
+      "path": "supabase/migrations/00010_updated_at_triggers.sql",
+      "description": "Create trigger function and triggers to auto-update updated_at on row modification"
+    },
+    {
+      "path": "supabase/functions/generate-recurring/index.ts",
+      "description": "Supabase Edge Function: daily cron that creates expenses from active recurring templates"
+    },
+    {
+      "path": "supabase/config.toml",
+      "description": "Supabase local dev configuration"
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "next",
+      "version": "15.1",
+      "purpose": "React framework with App Router, Server Components, and API route handlers",
+      "dev": false
+    },
+    {
+      "name": "react",
+      "version": "19.0",
+      "purpose": "UI library for building component-based interfaces",
+      "dev": false
+    },
+    {
+      "name": "react-dom",
+      "version": "19.0",
+      "purpose": "React DOM rendering",
+      "dev": false
+    },
+    {
+      "name": "@supabase/supabase-js",
+      "version": "2.47",
+      "purpose": "Supabase JavaScript client for database queries, auth, realtime, and storage",
+      "dev": false
+    },
+    {
+      "name": "@supabase/ssr",
+      "version": "0.5",
+      "purpose": "Supabase server-side rendering helpers for Next.js (cookie-based session management)",
+      "dev": false
+    },
+    {
+      "name": "react-hook-form",
+      "version": "7.54",
+      "purpose": "Performant form state management with minimal re-renders — ideal for the expense entry form",
+      "dev": false
+    },
+    {
+      "name": "@hookform/resolvers",
+      "version": "3.9",
+      "purpose": "Connects Zod validation schemas to react-hook-form",
+      "dev": false
+    },
+    {
+      "name": "zod",
+      "version": "3.24",
+      "purpose": "TypeScript-first schema validation for forms and API request bodies",
+      "dev": false
+    },
+    {
+      "name": "lucide-react",
+      "version": "0.468",
+      "purpose": "Tree-shakeable icon library with 1500+ icons — used for nav, buttons, category icons",
+      "dev": false
+    },
+    {
+      "name": "date-fns",
+      "version": "4.1",
+      "purpose": "Lightweight modular date utility for formatting expense dates and month navigation",
+      "dev": false
+    },
+    {
+      "name": "sonner",
+      "version": "1.7",
+      "purpose": "Minimal toast notification library with built-in action buttons (for Undo on delete)",
+      "dev": false
+    },
+    {
+      "name": "tailwindcss",
+      "version": "3.4",
+      "purpose": "Utility-first CSS framework for all styling per the design system",
+      "dev": false
+    },
+    {
+      "name": "@tailwindcss/forms",
+      "version": "0.5",
+      "purpose": "Tailwind plugin for consistent form element styling",
+      "dev": false
+    },
+    {
+      "name": "clsx",
+      "version": "2.1",
+      "purpose": "Tiny utility for conditionally joining CSS class names",
+      "dev": false
+    },
+    {
+      "name": "tailwind-merge",
+      "version": "2.6",
+      "purpose": "Merge Tailwind classes without conflicts — used in cn() utility",
+      "dev": false
+    },
+    {
+      "name": "@react-pdf/renderer",
+      "version": "4.1",
+      "purpose": "Server-side PDF generation for monthly expense export",
+      "dev": false
+    },
+    {
+      "name": "typescript",
+      "version": "5.7",
+      "purpose": "TypeScript compiler for type safety across the codebase",
+      "dev": true
+    },
+    {
+      "name": "@types/react",
+      "version": "19.0",
+      "purpose": "TypeScript type definitions for React",
+      "dev": true
+    },
+    {
+      "name": "@types/node",
+      "version": "22.0",
+      "purpose": "TypeScript type definitions for Node.js",
+      "dev": true
+    },
+    {
+      "name": "eslint",
+      "version": "9.0",
+      "purpose": "JavaScript/TypeScript linter",
+      "dev": true
+    },
+    {
+      "name": "eslint-config-next",
+      "version": "15.1",
+      "purpose": "ESLint configuration preset for Next.js projects",
+      "dev": true
+    },
+    {
+      "name": "prettier",
+      "version": "3.4",
+      "purpose": "Code formatter for consistent style",
+      "dev": true
+    },
+    {
+      "name": "supabase",
+      "version": "2.0",
+      "purpose": "Supabase CLI for local development, migrations, and type generation",
+      "dev": true
+    }
+  ],
+  "techStack": {
+    "framework": "Next.js",
+    "frameworkVersion": "15.1",
+    "styling": "Tailwind CSS 3.4 with custom design system (indigo primary, Caveat/Inter fonts, hand-drawn shadow utilities)",
+    "database": "Supabase PostgreSQL with dedicated 'roomietab' schema, Row-Level Security on all tables, integer-cents monetary storage",
+    "auth": "Supabase Auth with email magic link and Google OAuth, PKCE flow, cookie-based sessions via @supabase/ssr",
+    "hosting": "Vercel (Edge Runtime for API routes, automatic preview deployments on PR)",
+    "ci": "GitHub Actions (lint, type-check, build on push and PR to main)"
+  },
+  "mermaidDiagram": "graph TD\n    subgraph Frontend[\"Frontend (Next.js 15 App Router)\"]\n        LP[\"Login Page\"]\n        OP[\"Onboarding Pages\"]\n        DP[\"Dashboard Page\"]\n        ELP[\"Expenses List Page\"]\n        AED[\"Add Expense Drawer\"]\n        SP[\"Settlement Page\"]\n        SETP[\"Settings Page\"]\n        UI[\"Shared UI Components\"]\n    end\n\n    subgraph API[\"API Layer (Next.js Route Handlers)\"]\n        AH[\"POST /api/households\"]\n        AE[\"POST /api/expenses\"]\n        ASC[\"POST /api/settlements/calculate\"]\n        ASA[\"POST /api/settlements/archive\"]\n        ARG[\"POST /api/recurring/generate\"]\n        AEX[\"POST /api/export\"]\n        ARU[\"POST /api/receipts/upload\"]\n    end\n\n    subgraph Supabase[\"Supabase Services\"]\n        AUTH[\"Supabase Auth\\n(Magic Link + Google OAuth)\"]\n        DB[\"Supabase Database\\n(PostgreSQL + RLS)\"]\n        RT[\"Supabase Realtime\\n(Change Notifications)\"]\n        ST[\"Supabase Storage\\n(Receipt Images)\"]\n        EF[\"Supabase Edge Functions\\n(Recurring Cron)\"]\n    end\n\n    subgraph External[\"External Services\"]\n        VDL[\"Venmo Deep Links\"]\n        PDL[\"PayPal Deep Links\"]\n        ZDL[\"Zelle Deep Links\"]\n        VH[\"Vercel Hosting\"]\n        GH[\"GitHub Actions CI\"]\n    end\n\n    LP -->|\"Email magic link / Google OAuth\"| AUTH\n    AUTH -->|\"auth.uid() for RLS policies\"| DB\n    DP -->|\"Direct Supabase client queries\"| DB\n    ELP -->|\"Fetch expenses by household+month\"| DB\n    AED -->|\"Insert expense+splits optimistic UI\"| DB\n    RT -->|\"Live balance updates\"| DP\n    RT -->|\"Real-time expense sync\"| ELP\n    SP -->|\"Compute min transactions\"| ASC\n    SP -->|\"One-tap payment links\"| VDL\n    SP -->|\"One-tap payment links\"| PDL\n    SP -->|\"One-tap payment links\"| ZDL\n    ASA -->|\"Archive month + persist\"| DB\n    EF -->|\"Auto-create recurring expenses\"| DB\n    AED -->|\"Upload receipt photos\"| ST\n    ARU -->|\"Store receipt files\"| ST\n    AEX -->|\"Query monthly data\"| DB\n    OP -->|\"Create household\"| AH\n    AH -->|\"Insert household+member\"| DB\n    AE -->|\"Atomic expense+splits insert\"| DB\n    ASC -->|\"Query balances for algorithm\"| DB\n\n    style Frontend fill:#EEF2FF,stroke:#6366F1,stroke-width:2px\n    style API fill:#E0F2FE,stroke:#0EA5E9,stroke-width:2px\n    style Supabase fill:#DCFCE7,stroke:#059669,stroke-width:2px\n    style External fill:#FEF3C7,stroke:#D97706,stroke-width:2px"
+}

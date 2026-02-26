@@ -1,0 +1,217 @@
+{
+  "summary": {
+    "totalFindings": 12,
+    "critical": 1,
+    "high": 3,
+    "medium": 4,
+    "low": 2,
+    "info": 2,
+    "autoFixed": 2
+  },
+  "findings": [
+    {
+      "id": "DEP-001",
+      "title": "Next.js Multiple CVEs — DoS, Cache Poisoning, SSRF, Info Disclosure",
+      "severity": "critical",
+      "category": "Vulnerable Components (OWASP A06)",
+      "description": "The installed Next.js version 15.1.x is affected by 6 known CVEs: (1) GHSA-67rr-84xm-4c7r — DoS via cache poisoning (CVSS 7.5, High); (2) GHSA-7m27-7ghc-44w9 — DoS via Server Actions (CVSS 5.3); (3) GHSA-g5qg-72qw-gw5v — Cache Key Confusion for Image Optimization (CVSS 6.2); (4) GHSA-xv57-4mr9-wg8v — Content Injection for Image Optimization (CVSS 4.3); (5) GHSA-4342-x723-ch2f — Middleware Redirect SSRF (CVSS 6.5); (6) GHSA-3h52-269p-cp9r — Dev server information exposure. The overall npm audit severity is reported as critical.",
+      "location": "package.json — next@15.1.x",
+      "recommendation": "Upgrade Next.js to 15.4.5 or later (the latest stable release as of 2026) to remediate all listed CVEs. Run: npm install next@latest",
+      "autoFixed": false,
+      "fixDescription": "Manual upgrade required: npm install next@latest"
+    },
+    {
+      "id": "SEC-HDR-001",
+      "title": "Missing Security Headers (X-Content-Type-Options, X-Frame-Options, HSTS, CSP, Referrer-Policy, Permissions-Policy)",
+      "severity": "high",
+      "category": "Security Misconfiguration (OWASP A05)",
+      "description": "The original next.config.ts had no HTTP security headers configured. All of the OWASP-recommended headers were absent: X-Content-Type-Options (MIME sniffing protection), X-Frame-Options (clickjacking), Strict-Transport-Security (HTTPS enforcement), Content-Security-Policy (XSS/injection defence), Referrer-Policy, and Permissions-Policy. This exposes users to clickjacking, MIME-confusion attacks, and weakens XSS defences.",
+      "location": "next.config.ts",
+      "recommendation": "Configure security headers via the Next.js headers() async function in next.config.ts. All seven required headers have been added.",
+      "autoFixed": true,
+      "fixDescription": "Added a complete securityHeaders array to next.config.ts via the headers() hook covering: X-Content-Type-Options: nosniff, X-Frame-Options: DENY, X-XSS-Protection: 1; mode=block, Strict-Transport-Security: max-age=31536000; includeSubDomains; preload, Referrer-Policy: strict-origin-when-cross-origin, Permissions-Policy: camera=(), microphone=(), geolocation=(), and a Content-Security-Policy restricting script/style/img/connect/frame sources."
+    },
+    {
+      "id": "XSS-001",
+      "title": "Stored XSS in HTML PDF Export — Unescaped User-Controlled Data Interpolated Into HTML",
+      "severity": "high",
+      "category": "Injection / XSS (OWASP A03)",
+      "description": "The /api/export/pdf route (src/app/api/export/pdf/route.ts) generates an HTML document by directly interpolating database values (expense.description, expense.category, expense.expense_date, member display_name, household name, formatCents output) into a template literal without HTML-entity escaping. Any of these fields can contain attacker-controlled content (e.g., a description like '<script>fetch(...)' saved earlier). When a victim downloads and opens the file in a browser, arbitrary JavaScript executes in their browser context. Note: the Content-Disposition: attachment header mitigates direct inline rendering, but users routinely open attachments and many browsers render HTML files opened locally.",
+      "location": "src/app/api/export/pdf/route.ts — lines 96–175 (original)",
+      "recommendation": "HTML-escape all user-supplied values before interpolating them into the template. Replace special characters (&, <, >, \", ') with their HTML entity equivalents.",
+      "autoFixed": true,
+      "fixDescription": "Added an esc() helper function that replaces &, <, >, \", ' with HTML entities (&amp;, &lt;, &gt;, &quot;, &#039;) and applied it to every user-controlled value: expense.description, expense.category, expense.expense_date, member display names, household name, monthLabel, formatCents output, and the date string."
+    },
+    {
+      "id": "AUTH-001",
+      "title": "Cron Endpoint Has No Authentication When CRON_SECRET Is Unset",
+      "severity": "high",
+      "category": "Broken Access Control (OWASP A01)",
+      "description": "In src/app/api/recurring/generate/route.ts the CRON_SECRET check is conditional: `if (cronSecret && authHeader !== ...)`. If the CRON_SECRET environment variable is not set (e.g., in development or a misconfigured deployment), the check is entirely bypassed and any unauthenticated caller can trigger bulk expense generation across ALL active recurring templates for ALL households, potentially creating massive fraudulent expense records. The endpoint uses createClient() with the user session (not admin client), but because cronSecret is falsy the route proceeds without any auth.",
+      "location": "src/app/api/recurring/generate/route.ts — lines 14–18",
+      "recommendation": "Make CRON_SECRET mandatory: change the guard to `if (!cronSecret || authHeader !== 'Bearer ' + cronSecret) { return 401 }`. Also verify CRON_SECRET is set in all deployment environments. Add CRON_SECRET to the .env.local.example file.",
+      "autoFixed": false,
+      "fixDescription": "Manual fix required: replace the conditional secret check with a hard-fail check that rejects the request whenever CRON_SECRET is absent or does not match."
+    },
+    {
+      "id": "INPUT-001",
+      "title": "No Rate Limiting on Auth-Sensitive Endpoints",
+      "severity": "medium",
+      "category": "Insecure Design (OWASP A04)",
+      "description": "None of the API routes implement rate limiting. The most sensitive endpoints for abuse are: POST /api/households/join-by-code (invite-code brute-force — 6-character alphanumeric codes can be brute-forced), POST /api/households/[id]/join (same), POST /api/receipts/upload (storage exhaustion), and POST /api/export/pdf (CPU/memory DoS). No middleware applies request throttling.",
+      "location": "src/app/api/households/join-by-code/route.ts, src/app/api/receipts/upload/route.ts, src/app/api/export/pdf/route.ts",
+      "recommendation": "Implement rate limiting using a middleware solution such as the Vercel KV-backed rate limiter, Upstash Ratelimit, or the next-rate-limit package. Particularly protect the invite-code lookup endpoint (e.g., max 10 requests/minute per IP).",
+      "autoFixed": false,
+      "fixDescription": ""
+    },
+    {
+      "id": "INPUT-002",
+      "title": "Missing Zod / Schema Validation on Multiple API Routes — No Input Sanitization",
+      "severity": "medium",
+      "category": "Injection / Input Validation (OWASP A03)",
+      "description": "The project defines Zod schemas in src/lib/validations.ts, but none of the API route handlers import or apply them. Routes parse raw request.json() and perform only basic truthy checks. This means: (1) string fields like description, category, splitType are passed directly to Supabase without type or length validation; (2) amountCents accepts any integer including extremely large values (no maximum); (3) category and splitType accept any string — while the DB CHECK constraint catches invalid enums, the error message leaks internal schema details; (4) the month parameter is passed to parseISO without validation — a malformed date string causes an unhandled exception that falls through to a 500 with an error message.",
+      "location": "src/app/api/expenses/route.ts, src/app/api/recurring-templates/route.ts, src/app/api/settlements/calculate/route.ts, src/app/api/settlements/archive/route.ts",
+      "recommendation": "Apply the existing Zod schemas (or new ones) at the top of each route handler using safeParse() and return 400 with validation errors on failure. Add max-length constraints to text fields (e.g., description max 500 chars), a ceiling on amountCents (e.g., max $1,000,000), and strict enum validation for category and splitType.",
+      "autoFixed": false,
+      "fixDescription": ""
+    },
+    {
+      "id": "RLS-001",
+      "title": "Settlements Archive — No Admin-Only RLS / Route Guard for Archiving",
+      "severity": "medium",
+      "category": "Broken Access Control (OWASP A01)",
+      "description": "The architecture doc states 'Only admin can archive', but the POST /api/settlements/archive route (line 29–40) only verifies that the caller is an active household member — any member (not only admins) can archive a month. The RLS policy for settlements INSERT/UPDATE also allows any active member. This is an authorization inconsistency between the spec and the implementation.",
+      "location": "src/app/api/settlements/archive/route.ts — line 29 comment says 'any member can archive'",
+      "recommendation": "Add an admin role check after the membership check in the archive route: verify `member.role === 'admin'` before proceeding. Update the settlements INSERT/UPDATE RLS policy to additionally require `role = 'admin'` if admin-only archiving is the intended design.",
+      "autoFixed": false,
+      "fixDescription": ""
+    },
+    {
+      "id": "OPEN-REDIRECT-001",
+      "title": "Open Redirect in Auth Callback — Unvalidated 'next' Parameter",
+      "severity": "medium",
+      "category": "Broken Access Control (OWASP A01)",
+      "description": "The auth callback handler at src/app/auth/callback/route.ts reads `const next = searchParams.get('next') ?? '/'` and redirects to `${origin}${next}` without validating that next is a relative path within the application. An attacker can craft a magic-link with `?next=//evil.com/phishing` or `?next=/login?error=...` (for UI redirection phishing). While the origin is prepended (which prevents full off-site redirect in most cases), paths starting with `//` can still cause cross-origin redirects in some browser/Node URL parsing edge cases.",
+      "location": "src/app/auth/callback/route.ts — line 10, 48",
+      "recommendation": "Validate the next parameter: ensure it starts with '/' and does not start with '//' or contain '://' before using it. Example guard: `const safeNext = next.startsWith('/') && !next.startsWith('//') ? next : '/'`",
+      "autoFixed": false,
+      "fixDescription": ""
+    },
+    {
+      "id": "GITIGNORE-001",
+      "title": "No .gitignore File Detected",
+      "severity": "low",
+      "category": "Security Misconfiguration (OWASP A05)",
+      "description": "No .gitignore file was found in the project root. Without a .gitignore, sensitive files such as .env.local (containing SUPABASE_SERVICE_ROLE_KEY and NEXT_PUBLIC_SUPABASE_ANON_KEY), node_modules/, and .next/ build artifacts could be accidentally committed and pushed to a public or private repository, exposing credentials.",
+      "location": "/ (project root) — .gitignore absent",
+      "recommendation": "Create a .gitignore that includes at minimum: .env.local, .env*.local, node_modules/, .next/, out/, .vercel/. Use the Next.js default .gitignore from create-next-app as a baseline.",
+      "autoFixed": false,
+      "fixDescription": ""
+    },
+    {
+      "id": "INVITE-CODE-001",
+      "title": "Invite Code Lookup Discloses Household Existence Without Authentication",
+      "severity": "low",
+      "category": "Broken Access Control (OWASP A01)",
+      "description": "The POST /api/households/join-by-code route requires authentication (401 if no user), so unauthenticated enumeration is blocked. However, the route returns distinct error messages: 'Invalid invite code. Household not found.' vs. 'You are already a member of this household' vs. 'You already belong to a different household'. These distinct messages enable an authenticated user to confirm whether a given invite code is valid, and to infer household membership of other users.",
+      "location": "src/app/api/households/join-by-code/route.ts — lines 31–48",
+      "recommendation": "Return a generic 'Invalid invite code' message for all failure cases that could leak household existence or membership status.",
+      "autoFixed": false,
+      "fixDescription": ""
+    },
+    {
+      "id": "INFO-001",
+      "title": "Error Messages May Leak Internal Database Details",
+      "severity": "info",
+      "category": "Security Misconfiguration (OWASP A05)",
+      "description": "Multiple API routes return raw Supabase/PostgREST error messages directly to clients (e.g., `{ error: error.message }` or `{ error: supabaseError.message }`). These can include table names, column names, constraint names, and PostgreSQL error codes, which aid attackers in reconnaissance.",
+      "location": "src/app/api/households/route.ts line 89, src/app/api/expenses/route.ts lines 89, 112, src/app/api/expenses/[id]/route.ts lines 86, 111, and many others",
+      "recommendation": "Wrap all Supabase errors: log them server-side (with a correlation ID) and return a generic 'An internal error occurred' message with the correlation ID to clients. Only return specific user-facing messages where safe (e.g., unique constraint violations).",
+      "autoFixed": false,
+      "fixDescription": ""
+    },
+    {
+      "id": "INFO-002",
+      "title": "Receipt Upload — File Extension Taken From Client-Supplied Filename",
+      "severity": "info",
+      "category": "Insecure Design (OWASP A04)",
+      "description": "In src/app/api/receipts/upload/route.ts the storage filename is constructed as `${user.id}/${Date.now()}.${file.name.split('.').pop()}`. The extension is derived from the client-provided filename, not from the validated MIME type. An attacker could supply a file named malicious.html with MIME type image/jpeg (bypassing the MIME check) and store it with an .html extension in the public receipts bucket.",
+      "location": "src/app/api/receipts/upload/route.ts — line 33",
+      "recommendation": "Derive the extension from the validated MIME type map rather than the client filename: e.g., `const extMap = {'image/jpeg':'jpg','image/png':'png','image/webp':'webp','image/heic':'heic'}; const ext = extMap[file.type] ?? 'jpg'`. This ensures the stored file always has a safe extension regardless of the uploaded filename.",
+      "autoFixed": false,
+      "fixDescription": ""
+    }
+  ],
+  "dependencyAudit": {
+    "totalDependencies": 24,
+    "vulnerabilities": 6,
+    "details": [
+      {
+        "package": "next@15.1.x",
+        "severity": "high",
+        "description": "GHSA-67rr-84xm-4c7r: Next.JS cache poisoning DoS (CVSS 7.5)"
+      },
+      {
+        "package": "next@15.1.x",
+        "severity": "moderate",
+        "description": "GHSA-7m27-7ghc-44w9: DoS with Server Actions (CVSS 5.3)"
+      },
+      {
+        "package": "next@15.1.x",
+        "severity": "moderate",
+        "description": "GHSA-g5qg-72qw-gw5v: Cache Key Confusion for Image Optimization API (CVSS 6.2)"
+      },
+      {
+        "package": "next@15.1.x",
+        "severity": "moderate",
+        "description": "GHSA-xv57-4mr9-wg8v: Content Injection for Image Optimization (CVSS 4.3)"
+      },
+      {
+        "package": "next@15.1.x",
+        "severity": "moderate",
+        "description": "GHSA-4342-x723-ch2f: Middleware Redirect Handling leads to SSRF (CVSS 6.5)"
+      },
+      {
+        "package": "next@15.1.x",
+        "severity": "low",
+        "description": "GHSA-3h52-269p-cp9r: Information exposure in Next.js dev server due to lack of origin verification"
+      }
+    ]
+  },
+  "rlsValidation": {
+    "allTablesProtected": true,
+    "findings": [
+      "PASS: Migration 00001 contains CREATE SCHEMA IF NOT EXISTS roomietab — schema created before any tables.",
+      "PASS: All 7 tables use schema-qualified names (roomietab.<table>) in all migrations.",
+      "PASS: Migration 00008 enables RLS on all 7 tables: households, members, expenses, expense_splits, recurring_templates, settlements, settlement_transactions.",
+      "PASS: All policies use auth.uid() correctly for identity checks.",
+      "PASS: SELECT policies on all tables verified — household-scoped via EXISTS subqueries.",
+      "PASS: INSERT WITH CHECK policies on all tables — prevent cross-household data insertion.",
+      "PASS: UPDATE USING policies on all tables.",
+      "PASS: DELETE policies present on expenses and expense_splits.",
+      "PASS: Supabase client (client.ts and server.ts) both configure db: { schema: 'roomietab' }.",
+      "PASS: SUPABASE_SERVICE_ROLE_KEY is only referenced in server.ts (createAdminClient) — never in client.ts or any client-side file.",
+      "PASS: Only NEXT_PUBLIC_ prefixed keys are exposed to browser clients.",
+      "WARN: The members INSERT policy allows admin to insert guest members with null user_id — by design for guest support, but ensure guest members cannot later be claimed without proper verification.",
+      "WARN: settlements and settlement_transactions have no DELETE policy — rows cannot be removed once created. This is intentional for audit trails but confirm it is by design.",
+      "WARN: recurring_templates has no DELETE policy — templates can only be deactivated (is_active=false), not hard-deleted. Confirm this is intentional."
+    ]
+  },
+  "secretScan": {
+    "secretsFound": false,
+    "locations": [
+      "PASS: No hardcoded API keys (sk-, pk_) found in any source file.",
+      "PASS: No hardcoded JWT tokens (eyJ...) found in source files.",
+      "PASS: No hardcoded passwords or connection strings found in source files.",
+      "PASS: SUPABASE_SERVICE_ROLE_KEY is only referenced via process.env.SUPABASE_SERVICE_ROLE_KEY in server.ts (server-side only).",
+      "PASS: .env.local.example contains only placeholder values (no real credentials).",
+      "WARN: .gitignore file not found — if .env.local exists, it could be accidentally committed to version control.",
+      "INFO: The .env.local.example file correctly shows SUPABASE_SERVICE_ROLE_KEY as a server-only variable (no NEXT_PUBLIC_ prefix)."
+    ]
+  },
+  "headersCheck": {
+    "configured": true,
+    "missingHeaders": []
+  },
+  "overallRating": "pass-with-warnings"
+}

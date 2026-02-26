@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --background: #F9FAFB;
+  --foreground: #111827;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.font-caveat {
+  font-family: 'Caveat', cursive;
+}
+
+@layer utilities {
+  .shadow-fab {
+    box-shadow: 3px 3px 0 #4338CA, 0 4px 16px rgba(99, 102, 241, 0.35);
+  }
+  .shadow-card {
+    box-shadow: 3px 4px 0 #C4B8D9;
+  }
+  .shadow-card-hover {
+    box-shadow: 1px 2px 0 #C4B8D9;
+  }
+  .shadow-drawer {
+    box-shadow: 0 -4px 32px rgba(99, 102, 241, 0.12);
+  }
+  .shadow-toast {
+    box-shadow: 3px 4px 0 #C4B8D9;
+  }
+}
+
+@keyframes slideDown {
+  from { transform: translateX(-50%) translateY(-20px); opacity: 0; }
+  to   { transform: translateX(-50%) translateY(0);    opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+@keyframes pulseScale {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.15); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.animate-slide-down { animation: slideDown 0.3s ease-out; }
+.animate-slide-up   { animation: slideUp 0.3s ease-out; }
+.animate-pulse-scale { animation: pulseScale 1s ease-in-out 3; }
+.animate-fade-in    { animation: fadeIn 0.2s ease-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-slide-down,
+  .animate-slide-up,
+  .animate-pulse-scale,
+  .animate-fade-in {
+    animation: none;
+  }
+}

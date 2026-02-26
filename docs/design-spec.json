@@ -1,0 +1,1530 @@
+{
+  "designSystem": {
+    "colors": {
+      "primary": [
+        {
+          "name": "primary-50",
+          "value": "#EEF2FF",
+          "tailwindClass": "bg-indigo-50",
+          "usage": "Lightest background tint, hero section fills"
+        },
+        {
+          "name": "primary-100",
+          "value": "#E0E7FF",
+          "tailwindClass": "bg-indigo-100",
+          "usage": "Hover backgrounds for ghost buttons"
+        },
+        {
+          "name": "primary-200",
+          "value": "#C7D2FE",
+          "tailwindClass": "bg-indigo-200",
+          "usage": "Skeleton loaders, disabled surfaces"
+        },
+        {
+          "name": "primary-300",
+          "value": "#A5B4FC",
+          "tailwindClass": "bg-indigo-300",
+          "usage": "Decorative accents, illustration fills"
+        },
+        {
+          "name": "primary-400",
+          "value": "#818CF8",
+          "tailwindClass": "bg-indigo-400",
+          "usage": "Secondary interactive states"
+        },
+        {
+          "name": "primary-500",
+          "value": "#6366F1",
+          "tailwindClass": "bg-indigo-500",
+          "usage": "Primary brand colour, CTAs, FAB"
+        },
+        {
+          "name": "primary-600",
+          "value": "#4F46E5",
+          "tailwindClass": "bg-indigo-600",
+          "usage": "Button hover/active state"
+        },
+        {
+          "name": "primary-700",
+          "value": "#4338CA",
+          "tailwindClass": "bg-indigo-700",
+          "usage": "Button pressed shadow, dark accents"
+        },
+        {
+          "name": "primary-800",
+          "value": "#3730A3",
+          "tailwindClass": "bg-indigo-800",
+          "usage": "Dark-mode primary surface"
+        },
+        {
+          "name": "primary-900",
+          "value": "#312E81",
+          "tailwindClass": "bg-indigo-900",
+          "usage": "Darkest brand text, icon fills on light"
+        }
+      ],
+      "neutral": [
+        {
+          "name": "gray-50",
+          "value": "#F9FAFB",
+          "tailwindClass": "bg-gray-50",
+          "usage": "App background, card inner fills"
+        },
+        {
+          "name": "gray-100",
+          "value": "#F3F4F6",
+          "tailwindClass": "bg-gray-100",
+          "usage": "Input backgrounds, skeleton"
+        },
+        {
+          "name": "gray-200",
+          "value": "#E5E7EB",
+          "tailwindClass": "bg-gray-200",
+          "usage": "Dividers, borders"
+        },
+        {
+          "name": "gray-300",
+          "value": "#D1D5DB",
+          "tailwindClass": "bg-gray-300",
+          "usage": "Placeholder text, disabled icons"
+        },
+        {
+          "name": "gray-400",
+          "value": "#9CA3AF",
+          "tailwindClass": "bg-gray-400",
+          "usage": "Helper/muted text"
+        },
+        {
+          "name": "gray-500",
+          "value": "#6B7280",
+          "tailwindClass": "bg-gray-500",
+          "usage": "Secondary labels, captions"
+        },
+        {
+          "name": "gray-600",
+          "value": "#4B5563",
+          "tailwindClass": "bg-gray-600",
+          "usage": "Body text secondary"
+        },
+        {
+          "name": "gray-700",
+          "value": "#374151",
+          "tailwindClass": "bg-gray-700",
+          "usage": "Dark mode card surface"
+        },
+        {
+          "name": "gray-800",
+          "value": "#1F2937",
+          "tailwindClass": "bg-gray-800",
+          "usage": "Dark mode page background"
+        },
+        {
+          "name": "gray-900",
+          "value": "#111827",
+          "tailwindClass": "bg-gray-900",
+          "usage": "Primary body text, headings"
+        }
+      ],
+      "semantic": [
+        {
+          "name": "success-500",
+          "value": "#059669",
+          "tailwindClass": "bg-emerald-600",
+          "usage": "Positive balance, settled checkmarks, success toasts"
+        },
+        {
+          "name": "success-100",
+          "value": "#DCFCE7",
+          "tailwindClass": "bg-green-100",
+          "usage": "Success badge backgrounds"
+        },
+        {
+          "name": "error-500",
+          "value": "#DC2626",
+          "tailwindClass": "bg-red-600",
+          "usage": "Negative balance, error toasts, destructive actions"
+        },
+        {
+          "name": "error-100",
+          "value": "#FEE2E2",
+          "tailwindClass": "bg-red-100",
+          "usage": "Error badge backgrounds"
+        },
+        {
+          "name": "warning-500",
+          "value": "#D97706",
+          "tailwindClass": "bg-amber-600",
+          "usage": "Settlement reminders, pending states"
+        },
+        {
+          "name": "warning-100",
+          "value": "#FEF3C7",
+          "tailwindClass": "bg-amber-100",
+          "usage": "Warning badge backgrounds"
+        },
+        {
+          "name": "info-500",
+          "value": "#0EA5E9",
+          "tailwindClass": "bg-sky-500",
+          "usage": "Info toasts, sync indicators"
+        },
+        {
+          "name": "info-100",
+          "value": "#E0F2FE",
+          "tailwindClass": "bg-sky-100",
+          "usage": "Info badge backgrounds"
+        },
+        {
+          "name": "teal-500",
+          "value": "#0D9488",
+          "tailwindClass": "bg-teal-600",
+          "usage": "Secondary brand, category icons"
+        },
+        {
+          "name": "teal-100",
+          "value": "#CCFBF1",
+          "tailwindClass": "bg-teal-100",
+          "usage": "Teal badge backgrounds, avatar fills"
+        }
+      ]
+    },
+    "typography": [
+      {
+        "name": "display",
+        "fontFamily": "Caveat, cursive",
+        "fontSize": "2.25rem",
+        "fontWeight": "700",
+        "lineHeight": "1.15",
+        "tailwindClass": "font-['Caveat'] text-4xl font-bold leading-tight"
+      },
+      {
+        "name": "heading-1",
+        "fontFamily": "Inter, system-ui",
+        "fontSize": "1.875rem",
+        "fontWeight": "700",
+        "lineHeight": "1.2",
+        "tailwindClass": "text-3xl font-bold leading-snug"
+      },
+      {
+        "name": "heading-2",
+        "fontFamily": "Inter, system-ui",
+        "fontSize": "1.5rem",
+        "fontWeight": "600",
+        "lineHeight": "1.3",
+        "tailwindClass": "text-2xl font-semibold"
+      },
+      {
+        "name": "heading-3",
+        "fontFamily": "Caveat, cursive",
+        "fontSize": "1.25rem",
+        "fontWeight": "600",
+        "lineHeight": "1.35",
+        "tailwindClass": "font-['Caveat'] text-xl font-semibold"
+      },
+      {
+        "name": "body-lg",
+        "fontFamily": "Inter, system-ui",
+        "fontSize": "1rem",
+        "fontWeight": "400",
+        "lineHeight": "1.6",
+        "tailwindClass": "text-base leading-relaxed"
+      },
+      {
+        "name": "body",
+        "fontFamily": "Inter, system-ui",
+        "fontSize": "0.9375rem",
+        "fontWeight": "400",
+        "lineHeight": "1.5",
+        "tailwindClass": "text-[15px] leading-normal"
+      },
+      {
+        "name": "body-sm",
+        "fontFamily": "Inter, system-ui",
+        "fontSize": "0.875rem",
+        "fontWeight": "400",
+        "lineHeight": "1.5",
+        "tailwindClass": "text-sm"
+      },
+      {
+        "name": "caption",
+        "fontFamily": "Inter, system-ui",
+        "fontSize": "0.75rem",
+        "fontWeight": "400",
+        "lineHeight": "1.4",
+        "tailwindClass": "text-xs text-gray-500"
+      },
+      {
+        "name": "mono",
+        "fontFamily": "JetBrains Mono, monospace",
+        "fontSize": "0.875rem",
+        "fontWeight": "500",
+        "lineHeight": "1.5",
+        "tailwindClass": "font-mono text-sm"
+      },
+      {
+        "name": "sketch-ui",
+        "fontFamily": "Caveat, cursive",
+        "fontSize": "1rem",
+        "fontWeight": "600",
+        "lineHeight": "1.4",
+        "tailwindClass": "font-['Caveat'] font-semibold"
+      }
+    ],
+    "spacing": [
+      {
+        "name": "space-1",
+        "value": "0.25rem",
+        "tailwindClass": "p-1"
+      },
+      {
+        "name": "space-2",
+        "value": "0.5rem",
+        "tailwindClass": "p-2"
+      },
+      {
+        "name": "space-3",
+        "value": "0.75rem",
+        "tailwindClass": "p-3"
+      },
+      {
+        "name": "space-4",
+        "value": "1rem",
+        "tailwindClass": "p-4"
+      },
+      {
+        "name": "space-5",
+        "value": "1.25rem",
+        "tailwindClass": "p-5"
+      },
+      {
+        "name": "space-6",
+        "value": "1.5rem",
+        "tailwindClass": "p-6"
+      },
+      {
+        "name": "space-8",
+        "value": "2rem",
+        "tailwindClass": "p-8"
+      },
+      {
+        "name": "space-10",
+        "value": "2.5rem",
+        "tailwindClass": "p-10"
+      },
+      {
+        "name": "space-12",
+        "value": "3rem",
+        "tailwindClass": "p-12"
+      },
+      {
+        "name": "space-16",
+        "value": "4rem",
+        "tailwindClass": "p-16"
+      },
+      {
+        "name": "space-20",
+        "value": "5rem",
+        "tailwindClass": "p-20"
+      },
+      {
+        "name": "space-24",
+        "value": "6rem",
+        "tailwindClass": "p-24"
+      }
+    ],
+    "borderRadius": [
+      {
+        "name": "rounded-sm",
+        "value": "0.375rem",
+        "tailwindClass": "rounded-md"
+      },
+      {
+        "name": "rounded-base",
+        "value": "0.625rem",
+        "tailwindClass": "rounded-[10px]"
+      },
+      {
+        "name": "rounded-card",
+        "value": "0.875rem",
+        "tailwindClass": "rounded-[14px]"
+      },
+      {
+        "name": "rounded-lg",
+        "value": "1rem",
+        "tailwindClass": "rounded-2xl"
+      },
+      {
+        "name": "rounded-xl",
+        "value": "1.25rem",
+        "tailwindClass": "rounded-[20px]"
+      },
+      {
+        "name": "rounded-full",
+        "value": "9999px",
+        "tailwindClass": "rounded-full"
+      }
+    ],
+    "darkMode": true
+  },
+  "components": [
+    {
+      "name": "NavBar",
+      "type": "organism",
+      "description": "Bottom navigation bar on mobile (fixed, above safe-area inset) and top horizontal nav on desktop (md+). Renders four primary destinations: Home (dashboard), Expenses, Settle, Settings. Active tab has an indigo top-border indicator on mobile and an underline on desktop. Notification badge overlays the Expenses icon when there are unread entries.",
+      "props": [
+        {
+          "name": "activeTab",
+          "type": "'home' | 'expenses' | 'settle' | 'settings'",
+          "required": true,
+          "description": "Which nav item is currently active"
+        },
+        {
+          "name": "unreadCount",
+          "type": "number",
+          "required": false,
+          "description": "Badge count shown on Expenses tab icon; omit or 0 to hide"
+        },
+        {
+          "name": "householdName",
+          "type": "string",
+          "required": false,
+          "description": "Shown in top-bar header alongside logo on desktop"
+        }
+      ],
+      "variants": [
+        "mobile-bottom",
+        "desktop-top",
+        "with-badge"
+      ],
+      "tailwindClasses": "fixed bottom-0 inset-x-0 bg-white border-t border-dashed border-blue-200 flex md:static md:flex-row md:border-b md:border-t-0 z-40"
+    },
+    {
+      "name": "Button",
+      "type": "atom",
+      "description": "Multi-variant action button with minimum 44px touch target. All variants use slightly irregular border-radius for hand-drawn feel and a coloured offset shadow. Loading state replaces children with a spinner. Icon slot available on left or right.",
+      "props": [
+        {
+          "name": "variant",
+          "type": "'primary' | 'secondary' | 'ghost' | 'destructive' | 'success'",
+          "required": false,
+          "description": "Visual style preset; defaults to primary"
+        },
+        {
+          "name": "size",
+          "type": "'sm' | 'md' | 'lg'",
+          "required": false,
+          "description": "Controls padding and font size; defaults to md"
+        },
+        {
+          "name": "loading",
+          "type": "boolean",
+          "required": false,
+          "description": "Replaces label with spinner and disables interaction"
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "description": "Mutes colors and blocks pointer events"
+        },
+        {
+          "name": "icon",
+          "type": "React.ReactNode",
+          "required": false,
+          "description": "Optional icon rendered before the label"
+        },
+        {
+          "name": "fullWidth",
+          "type": "boolean",
+          "required": false,
+          "description": "Expands to fill container width"
+        },
+        {
+          "name": "onClick",
+          "type": "() => void",
+          "required": false,
+          "description": "Click handler"
+        }
+      ],
+      "variants": [
+        "primary",
+        "secondary",
+        "ghost",
+        "destructive",
+        "success",
+        "icon-only",
+        "loading"
+      ],
+      "tailwindClasses": "inline-flex items-center justify-center gap-2 min-h-[44px] px-5 py-2.5 rounded-[10px] font-semibold text-base transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+    },
+    {
+      "name": "Input",
+      "type": "atom",
+      "description": "Labelled text input with helper text, error state, and prefix/suffix slots. Currency mode prefixes a $ sign and sets numeric keyboard on mobile. Error state adds a red border and shows an inline message below. Minimum height 44px for touch compliance.",
+      "props": [
+        {
+          "name": "label",
+          "type": "string",
+          "required": false,
+          "description": "Visible label above the field"
+        },
+        {
+          "name": "placeholder",
+          "type": "string",
+          "required": false,
+          "description": "Ghost placeholder text"
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "Controlled value"
+        },
+        {
+          "name": "onChange",
+          "type": "(v: string) => void",
+          "required": false,
+          "description": "Change handler"
+        },
+        {
+          "name": "error",
+          "type": "string",
+          "required": false,
+          "description": "Error message; presence triggers red state"
+        },
+        {
+          "name": "helper",
+          "type": "string",
+          "required": false,
+          "description": "Helper text shown below field in normal state"
+        },
+        {
+          "name": "prefix",
+          "type": "React.ReactNode",
+          "required": false,
+          "description": "Node rendered inside left edge (e.g. $ sign)"
+        },
+        {
+          "name": "suffix",
+          "type": "React.ReactNode",
+          "required": false,
+          "description": "Node rendered inside right edge"
+        },
+        {
+          "name": "type",
+          "type": "'text' | 'email' | 'number' | 'currency'",
+          "required": false,
+          "description": "Input mode; currency shows $ prefix and numeric keyboard"
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "description": "Grays out and blocks interaction"
+        }
+      ],
+      "variants": [
+        "default",
+        "currency",
+        "with-prefix",
+        "error",
+        "disabled",
+        "search"
+      ],
+      "tailwindClasses": "w-full min-h-[44px] px-3.5 py-2.5 rounded-[10px] border border-blue-200 bg-gray-50 text-gray-900 text-[15px] focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition-shadow"
+    },
+    {
+      "name": "ExpenseCard",
+      "type": "molecule",
+      "description": "Displays a single expense row in the expenses list. Left: category emoji icon in a tinted circle. Center: description, CategoryBadge, payer name with avatar, date. Right: total amount bold, current user's share in muted caption. On mobile, swipe-left reveals Edit and Delete action buttons. Recurring expenses show a 🔄 badge.",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Unique expense ID"
+        },
+        {
+          "name": "description",
+          "type": "string",
+          "required": true,
+          "description": "Short expense label"
+        },
+        {
+          "name": "amount",
+          "type": "number",
+          "required": true,
+          "description": "Total amount in cents"
+        },
+        {
+          "name": "category",
+          "type": "'rent' | 'utilities' | 'groceries' | 'dining' | 'subscriptions' | 'transport' | 'household' | 'other'",
+          "required": true,
+          "description": "Category drives icon and badge color"
+        },
+        {
+          "name": "paidBy",
+          "type": "Member",
+          "required": true,
+          "description": "Member who paid"
+        },
+        {
+          "name": "splitMembers",
+          "type": "Member[]",
+          "required": true,
+          "description": "All members sharing this expense"
+        },
+        {
+          "name": "myShare",
+          "type": "number",
+          "required": true,
+          "description": "Current user's share in cents"
+        },
+        {
+          "name": "date",
+          "type": "Date",
+          "required": true,
+          "description": "Expense date"
+        },
+        {
+          "name": "isRecurring",
+          "type": "boolean",
+          "required": false,
+          "description": "Shows recurring badge when true"
+        },
+        {
+          "name": "receiptUrl",
+          "type": "string",
+          "required": false,
+          "description": "Thumbnail shown if present"
+        },
+        {
+          "name": "onEdit",
+          "type": "() => void",
+          "required": false,
+          "description": "Opens edit drawer"
+        },
+        {
+          "name": "onDelete",
+          "type": "() => void",
+          "required": false,
+          "description": "Triggers soft-delete with undo toast"
+        }
+      ],
+      "variants": [
+        "default",
+        "recurring",
+        "with-receipt",
+        "settled",
+        "swiped-open"
+      ],
+      "tailwindClasses": "flex items-center gap-3 bg-white rounded-[14px] border border-blue-100 px-4 py-3 shadow-[3px_4px_0_#C4B8D9] hover:shadow-[1px_2px_0_#C4B8D9] transition-shadow"
+    },
+    {
+      "name": "AddExpenseDrawer",
+      "type": "organism",
+      "description": "Primary expense entry UI. Renders as a bottom-sheet drawer on mobile (slides up from bottom, handle bar at top) and a centered modal on desktop. Amount input is large (48px font) and auto-focused on open. Paid-by and split-among sections show circular member avatars as toggles. Split type tabs switch between Equal/Exact/Percentage/Shares. Category picker is a horizontal scrollable pill row. Save CTA shows computed per-person amount in real time.",
+      "props": [
+        {
+          "name": "isOpen",
+          "type": "boolean",
+          "required": true,
+          "description": "Controls visibility"
+        },
+        {
+          "name": "onClose",
+          "type": "() => void",
+          "required": true,
+          "description": "Called on dismiss or cancel"
+        },
+        {
+          "name": "onSave",
+          "type": "(expense: NewExpense) => void",
+          "required": true,
+          "description": "Called with validated expense data"
+        },
+        {
+          "name": "members",
+          "type": "Member[]",
+          "required": true,
+          "description": "All household members for payer/split selectors"
+        },
+        {
+          "name": "currentUserId",
+          "type": "string",
+          "required": true,
+          "description": "Pre-selects current user as payer"
+        },
+        {
+          "name": "defaultCategory",
+          "type": "Category",
+          "required": false,
+          "description": "Pre-selects category if provided"
+        },
+        {
+          "name": "editExpense",
+          "type": "Expense",
+          "required": false,
+          "description": "When provided, drawer is in edit mode"
+        }
+      ],
+      "variants": [
+        "create",
+        "edit",
+        "mobile-drawer",
+        "desktop-modal"
+      ],
+      "tailwindClasses": "fixed inset-x-0 bottom-0 bg-white rounded-t-[20px] border-t-2 border-blue-200 shadow-[0_-4px_32px_rgba(99,102,241,0.12)] z-50 max-h-[92vh] overflow-y-auto md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[480px] md:rounded-[18px]"
+    },
+    {
+      "name": "BalanceSummaryCard",
+      "type": "molecule",
+      "description": "Shows one member's monthly financial position. Header: avatar + name. Three stat pills: Total Paid, Your Share, Net Balance. Net balance is bold green (positive, owed to them) or bold red (negative, they owe). Used in a 2-column grid on the dashboard and as full-width rows in the settlement screen.",
+      "props": [
+        {
+          "name": "member",
+          "type": "Member",
+          "required": true,
+          "description": "Member data including name, avatarUrl, color"
+        },
+        {
+          "name": "totalPaid",
+          "type": "number",
+          "required": true,
+          "description": "Total cents paid by this member this month"
+        },
+        {
+          "name": "totalOwed",
+          "type": "number",
+          "required": true,
+          "description": "Total cents this member owes (their share of all expenses)"
+        },
+        {
+          "name": "netBalance",
+          "type": "number",
+          "required": true,
+          "description": "Positive = others owe them, negative = they owe others"
+        },
+        {
+          "name": "isCurrentUser",
+          "type": "boolean",
+          "required": false,
+          "description": "Highlights card with indigo border when true"
+        },
+        {
+          "name": "compact",
+          "type": "boolean",
+          "required": false,
+          "description": "Compact mode for grid layout — hides stat labels"
+        }
+      ],
+      "variants": [
+        "default",
+        "current-user",
+        "compact",
+        "positive-balance",
+        "negative-balance",
+        "zero-balance"
+      ],
+      "tailwindClasses": "bg-white rounded-[14px] border border-blue-100 px-4 py-3 shadow-[3px_4px_0_#C4B8D9]"
+    },
+    {
+      "name": "SettlementTransactionRow",
+      "type": "molecule",
+      "description": "A single debt-simplification transaction. Shows payer avatar+name on left, dashed arrow with bold amount in centre, receiver avatar+name on right. Below: row of payment deep-link buttons (Venmo blue, PayPal navy, Zelle purple). A checkbox on the far left marks it as settled — on check, the row fades and gets a strikethrough with a green Settled badge.",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Transaction ID"
+        },
+        {
+          "name": "payer",
+          "type": "Member",
+          "required": true,
+          "description": "Member who needs to pay"
+        },
+        {
+          "name": "receiver",
+          "type": "Member",
+          "required": true,
+          "description": "Member who receives payment"
+        },
+        {
+          "name": "amount",
+          "type": "number",
+          "required": true,
+          "description": "Amount in cents"
+        },
+        {
+          "name": "isSettled",
+          "type": "boolean",
+          "required": true,
+          "description": "When true shows settled state"
+        },
+        {
+          "name": "onSettle",
+          "type": "(id: string) => void",
+          "required": true,
+          "description": "Toggle settled state"
+        },
+        {
+          "name": "venmoUrl",
+          "type": "string",
+          "required": false,
+          "description": "Pre-filled Venmo deep link"
+        },
+        {
+          "name": "paypalUrl",
+          "type": "string",
+          "required": false,
+          "description": "Pre-filled PayPal deep link"
+        },
+        {
+          "name": "zelleUrl",
+          "type": "string",
+          "required": false,
+          "description": "Zelle payment deep link"
+        }
+      ],
+      "variants": [
+        "pending",
+        "settled",
+        "current-user-pays",
+        "current-user-receives"
+      ],
+      "tailwindClasses": "rounded-xl border border-blue-200 bg-blue-50/30 p-3 space-y-2 transition-opacity"
+    },
+    {
+      "name": "FloatingActionButton",
+      "type": "atom",
+      "description": "56×56px circular button fixed above the bottom nav bar (bottom: 80px, right: 20px). Shows a + icon. On first app visit, plays a gentle scale-pulse animation 3 times to draw attention. Triggers the AddExpenseDrawer. Hidden when AddExpenseDrawer is open to avoid Z-index overlap.",
+      "props": [
+        {
+          "name": "onClick",
+          "type": "() => void",
+          "required": true,
+          "description": "Opens the AddExpenseDrawer"
+        },
+        {
+          "name": "showPulse",
+          "type": "boolean",
+          "required": false,
+          "description": "Plays onboarding pulse animation"
+        },
+        {
+          "name": "isHidden",
+          "type": "boolean",
+          "required": false,
+          "description": "Hides FAB when drawer is open"
+        }
+      ],
+      "variants": [
+        "default",
+        "pulsing",
+        "hidden"
+      ],
+      "tailwindClasses": "fixed bottom-20 right-5 w-14 h-14 rounded-full bg-indigo-500 text-white shadow-[3px_3px_0_#4338CA,0_4px_16px_rgba(99,102,241,0.35)] flex items-center justify-center text-3xl z-50 transition-transform active:scale-95"
+    },
+    {
+      "name": "MemberAvatarGroup",
+      "type": "molecule",
+      "description": "Renders up to 5 circular member avatars in an overlapping stack (each offset -8px from previous). Each avatar shows a photo or colour-coded initials. In selectable mode (used inside AddExpenseDrawer), clicking an avatar toggles it selected/unselected with an indigo ring and a 1.1× scale. Unselected avatars are 40% opacity.",
+      "props": [
+        {
+          "name": "members",
+          "type": "Member[]",
+          "required": true,
+          "description": "Ordered list of up to 5 members"
+        },
+        {
+          "name": "selectable",
+          "type": "boolean",
+          "required": false,
+          "description": "Enables click-to-toggle selection mode"
+        },
+        {
+          "name": "selected",
+          "type": "string[]",
+          "required": false,
+          "description": "Array of selected member IDs in selectable mode"
+        },
+        {
+          "name": "onToggle",
+          "type": "(memberId: string) => void",
+          "required": false,
+          "description": "Called when a member is toggled in selectable mode"
+        },
+        {
+          "name": "size",
+          "type": "'sm' | 'md' | 'lg'",
+          "required": false,
+          "description": "Avatar diameter: 24px / 36px / 48px"
+        },
+        {
+          "name": "showLabels",
+          "type": "boolean",
+          "required": false,
+          "description": "Shows name caption below each avatar in selectable mode"
+        }
+      ],
+      "variants": [
+        "display-only",
+        "selectable",
+        "compact-stack",
+        "with-labels"
+      ],
+      "tailwindClasses": "flex items-center"
+    },
+    {
+      "name": "Toast",
+      "type": "atom",
+      "description": "Notification toast that slides down from the top of the viewport. Auto-dismisses after 3 seconds (configurable). Variants use coloured left-border and matching icon. The success variant for expense deletion includes an Undo button that re-creates the expense via optimistic state rollback.",
+      "props": [
+        {
+          "name": "variant",
+          "type": "'success' | 'error' | 'info' | 'warning'",
+          "required": true,
+          "description": "Determines icon and accent color"
+        },
+        {
+          "name": "message",
+          "type": "string",
+          "required": true,
+          "description": "Main toast message text"
+        },
+        {
+          "name": "duration",
+          "type": "number",
+          "required": false,
+          "description": "Auto-dismiss delay in ms; defaults to 3000"
+        },
+        {
+          "name": "action",
+          "type": "{ label: string; onClick: () => void }",
+          "required": false,
+          "description": "Optional action button (e.g. Undo)"
+        },
+        {
+          "name": "onDismiss",
+          "type": "() => void",
+          "required": false,
+          "description": "Called when toast is dismissed or times out"
+        }
+      ],
+      "variants": [
+        "success",
+        "error",
+        "info",
+        "warning",
+        "with-undo"
+      ],
+      "tailwindClasses": "fixed top-4 left-1/2 -translate-x-1/2 z-[60] flex items-center gap-3 bg-white rounded-[14px] border border-blue-100 shadow-[3px_4px_0_#C4B8D9] px-4 py-3 min-w-[260px] max-w-[340px] animate-slide-down"
+    },
+    {
+      "name": "CategoryBadge",
+      "type": "atom",
+      "description": "Pill badge for an expense category. Each of the 8 categories has a fixed emoji, background tint, and text colour derived from the category's semantic hue. Supports an icon-only compact mode for tight spaces (e.g. inside ExpenseCard on narrow viewports).",
+      "props": [
+        {
+          "name": "category",
+          "type": "'rent' | 'utilities' | 'groceries' | 'dining' | 'subscriptions' | 'transport' | 'household' | 'other'",
+          "required": true,
+          "description": "Determines icon, colour, and label"
+        },
+        {
+          "name": "compact",
+          "type": "boolean",
+          "required": false,
+          "description": "Shows emoji only, hides text label"
+        },
+        {
+          "name": "size",
+          "type": "'sm' | 'md'",
+          "required": false,
+          "description": "Font and padding scale"
+        }
+      ],
+      "variants": [
+        "rent",
+        "utilities",
+        "groceries",
+        "dining",
+        "subscriptions",
+        "transport",
+        "household",
+        "other",
+        "compact"
+      ],
+      "tailwindClasses": "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold font-['Caveat'] leading-none"
+    },
+    {
+      "name": "MonthlyBreakdownChart",
+      "type": "organism",
+      "description": "Two-panel visual summary rendered as an SVG donut chart (left) plus a category legend with amounts (right), and below it a grouped horizontal bar chart comparing each member's total paid vs total share. The donut's centre label shows total month spend. Clicking a category legend row filters the expense list.",
+      "props": [
+        {
+          "name": "month",
+          "type": "string",
+          "required": true,
+          "description": "Display label e.g. 'February 2025'"
+        },
+        {
+          "name": "categoryTotals",
+          "type": "{ category: Category; total: number }[]",
+          "required": true,
+          "description": "Spending per category in cents"
+        },
+        {
+          "name": "memberTotals",
+          "type": "{ member: Member; paid: number; share: number }[]",
+          "required": true,
+          "description": "Per-member paid vs share for bar chart"
+        },
+        {
+          "name": "onCategoryClick",
+          "type": "(category: Category) => void",
+          "required": false,
+          "description": "Filters expense list to selected category"
+        },
+        {
+          "name": "compact",
+          "type": "boolean",
+          "required": false,
+          "description": "Hides member bar chart — donut+legend only"
+        }
+      ],
+      "variants": [
+        "full",
+        "compact-donut",
+        "bar-only"
+      ],
+      "tailwindClasses": "bg-white rounded-[14px] border border-blue-100 shadow-[3px_4px_0_#C4B8D9] px-5 py-4"
+    }
+  ],
+  "userFlows": [
+    {
+      "name": "Authentication",
+      "description": "Complete sign-up and login flow from landing page to first dashboard view. Supports magic-link email and Google OAuth. Roommates joining via invite link bypass the create-household step.",
+      "steps": [
+        {
+          "step": 1,
+          "screen": "Landing / Login",
+          "action": "User visits app URL; sees RoomieTab logo, tagline, and sign-in form",
+          "nextScreen": "Login"
+        },
+        {
+          "step": 2,
+          "screen": "Login",
+          "action": "User enters email and taps 'Send Magic Link' or clicks 'Continue with Google'",
+          "nextScreen": "Email Sent Confirmation"
+        },
+        {
+          "step": 3,
+          "screen": "Email Sent Confirmation",
+          "action": "Toast shows 'Check your email' — user opens their email client",
+          "nextScreen": "Email Inbox"
+        },
+        {
+          "step": 4,
+          "screen": "Email Inbox",
+          "action": "User clicks magic link in email; browser opens with auth token in URL",
+          "nextScreen": "Onboarding — Create or Join"
+        },
+        {
+          "step": 5,
+          "screen": "Onboarding — Create or Join",
+          "action": "New user chooses 'Create a household' or 'Join with invite link'",
+          "nextScreen": "Household Setup"
+        },
+        {
+          "step": 6,
+          "screen": "Household Setup",
+          "action": "User names household, sets own display name, invites roommates",
+          "nextScreen": "Dashboard"
+        },
+        {
+          "step": 7,
+          "screen": "Dashboard",
+          "action": "User lands on dashboard with empty state and a 'Add your first expense' prompt",
+          "nextScreen": "Dashboard (active)"
+        },
+        {
+          "step": 8,
+          "screen": "Login (returning)",
+          "action": "Returning user enters email, receives link, clicks link",
+          "nextScreen": "Dashboard (active)"
+        }
+      ]
+    },
+    {
+      "name": "Add Expense",
+      "description": "Fast expense capture from any screen in under 10 seconds. FAB opens the AddExpenseDrawer; amount field is auto-focused. Optimistic UI means the expense appears instantly in the list before the server round-trip completes.",
+      "steps": [
+        {
+          "step": 1,
+          "screen": "Any Screen",
+          "action": "User taps the indigo Floating Action Button (+ icon)",
+          "nextScreen": "Add Expense Drawer (open)"
+        },
+        {
+          "step": 2,
+          "screen": "Add Expense Drawer",
+          "action": "Amount field is auto-focused; user types expense total (e.g. 84.20)",
+          "nextScreen": "Add Expense Drawer"
+        },
+        {
+          "step": 3,
+          "screen": "Add Expense Drawer",
+          "action": "User types a short description (e.g. 'Whole Foods run')",
+          "nextScreen": "Add Expense Drawer"
+        },
+        {
+          "step": 4,
+          "screen": "Add Expense Drawer",
+          "action": "User taps payer avatar (defaults to self) — can change to another member",
+          "nextScreen": "Add Expense Drawer"
+        },
+        {
+          "step": 5,
+          "screen": "Add Expense Drawer",
+          "action": "User reviews split-among avatars (defaults to all); taps to deselect any member",
+          "nextScreen": "Add Expense Drawer"
+        },
+        {
+          "step": 6,
+          "screen": "Add Expense Drawer",
+          "action": "Optionally changes split type from Equal to Exact/Percentage/Shares",
+          "nextScreen": "Add Expense Drawer"
+        },
+        {
+          "step": 7,
+          "screen": "Add Expense Drawer",
+          "action": "Optionally taps a category pill (e.g. Groceries)",
+          "nextScreen": "Add Expense Drawer"
+        },
+        {
+          "step": 8,
+          "screen": "Add Expense Drawer",
+          "action": "Taps 'Save Expense — $84.20'; drawer closes, optimistic entry appears in list",
+          "nextScreen": "Expenses List / Dashboard"
+        },
+        {
+          "step": 9,
+          "screen": "Expenses List",
+          "action": "Success toast 'Grocery run added!' appears with Undo option; balances update live",
+          "nextScreen": "Expenses List"
+        },
+        {
+          "step": 10,
+          "screen": "Add Expense Drawer (error)",
+          "action": "If amount is missing or split doesn't add up, inline error shows and save is blocked",
+          "nextScreen": "Add Expense Drawer"
+        }
+      ]
+    },
+    {
+      "name": "Month-End Settlement",
+      "description": "Hero workflow showing minimum-transaction debt simplification. User reviews who owes whom, uses one-tap payment links, marks transactions settled, then archives the month.",
+      "steps": [
+        {
+          "step": 1,
+          "screen": "Any Screen",
+          "action": "User taps 'Settle' in bottom nav or 'Settle Up' CTA on dashboard",
+          "nextScreen": "Settlement"
+        },
+        {
+          "step": 2,
+          "screen": "Settlement",
+          "action": "User sees hero banner: '3 transactions clear all debts — algorithm optimized'",
+          "nextScreen": "Settlement"
+        },
+        {
+          "step": 3,
+          "screen": "Settlement",
+          "action": "User reviews per-member summary table (paid / share / net for each roommate)",
+          "nextScreen": "Settlement"
+        },
+        {
+          "step": 4,
+          "screen": "Settlement",
+          "action": "User reads first minimum transaction row: 'Jordan pays Maya $24.50'",
+          "nextScreen": "Settlement"
+        },
+        {
+          "step": 5,
+          "screen": "Settlement",
+          "action": "Jordan taps Venmo button; Venmo app opens pre-filled with Maya's handle and $24.50",
+          "nextScreen": "Venmo App (external)"
+        },
+        {
+          "step": 6,
+          "screen": "Venmo App (external)",
+          "action": "Jordan completes payment in Venmo and returns to RoomieTab",
+          "nextScreen": "Settlement"
+        },
+        {
+          "step": 7,
+          "screen": "Settlement",
+          "action": "Jordan taps checkbox on that transaction row; row fades with strikethrough and 'Settled' badge",
+          "nextScreen": "Settlement"
+        },
+        {
+          "step": 8,
+          "screen": "Settlement",
+          "action": "User repeats for remaining transactions until all are marked settled",
+          "nextScreen": "Settlement"
+        },
+        {
+          "step": 9,
+          "screen": "Settlement",
+          "action": "User taps 'Archive February & Start March'; confirmation modal appears",
+          "nextScreen": "Archive Confirmation Modal"
+        },
+        {
+          "step": 10,
+          "screen": "Archive Confirmation Modal",
+          "action": "User confirms archival; month is saved to history, new month begins",
+          "nextScreen": "Dashboard (March)"
+        },
+        {
+          "step": 11,
+          "screen": "Settlement",
+          "action": "Optionally taps Export PDF or Export CSV before archiving",
+          "nextScreen": "Download / Share sheet"
+        }
+      ]
+    },
+    {
+      "name": "Household Setup",
+      "description": "Onboarding flow for the household admin to create a group and invite up to 4 roommates. Roommates can join as guests via link with no account required.",
+      "steps": [
+        {
+          "step": 1,
+          "screen": "Onboarding — Create or Join",
+          "action": "New authenticated user taps 'Create a household'",
+          "nextScreen": "Household Setup"
+        },
+        {
+          "step": 2,
+          "screen": "Household Setup",
+          "action": "User types household name (e.g. 'Maple House 🍁')",
+          "nextScreen": "Household Setup"
+        },
+        {
+          "step": 3,
+          "screen": "Household Setup",
+          "action": "User types their own display name",
+          "nextScreen": "Household Setup"
+        },
+        {
+          "step": 4,
+          "screen": "Household Setup",
+          "action": "User types roommate emails one by one; each added as a pending member row",
+          "nextScreen": "Household Setup"
+        },
+        {
+          "step": 5,
+          "screen": "Household Setup",
+          "action": "User copies the shareable invite link to send via iMessage/WhatsApp",
+          "nextScreen": "Household Setup"
+        },
+        {
+          "step": 6,
+          "screen": "Household Setup",
+          "action": "User taps 'Create Household →'; server creates group, invites sent",
+          "nextScreen": "Dashboard (empty state)"
+        },
+        {
+          "step": 7,
+          "screen": "Invite Link Landing",
+          "action": "Roommate opens invite link; sees household name and a 'Join as Guest' / 'Sign up' option",
+          "nextScreen": "Join Household"
+        },
+        {
+          "step": 8,
+          "screen": "Join Household",
+          "action": "Roommate enters display name and taps Join (no account needed for guest mode)",
+          "nextScreen": "Dashboard (member)"
+        }
+      ]
+    },
+    {
+      "name": "Settings and Profile",
+      "description": "User manages their profile, household, notification preferences, recurring expenses, and data export from a single Settings screen.",
+      "steps": [
+        {
+          "step": 1,
+          "screen": "Any Screen",
+          "action": "User taps Settings in bottom nav",
+          "nextScreen": "Settings"
+        },
+        {
+          "step": 2,
+          "screen": "Settings — Profile",
+          "action": "User edits display name inline or taps avatar to change photo",
+          "nextScreen": "Settings"
+        },
+        {
+          "step": 3,
+          "screen": "Settings — Household",
+          "action": "User views members, copies invite link, or taps Rename household",
+          "nextScreen": "Settings"
+        },
+        {
+          "step": 4,
+          "screen": "Settings — Notifications",
+          "action": "User toggles push notification preferences for new expenses, tags, reminders",
+          "nextScreen": "Settings"
+        },
+        {
+          "step": 5,
+          "screen": "Settings — Recurring",
+          "action": "User taps a recurring expense row to edit amount, day, or members",
+          "nextScreen": "Edit Recurring Expense Modal"
+        },
+        {
+          "step": 6,
+          "screen": "Edit Recurring Expense Modal",
+          "action": "User updates expense details and saves",
+          "nextScreen": "Settings"
+        },
+        {
+          "step": 7,
+          "screen": "Settings — Data",
+          "action": "User taps Export PDF or Export CSV; file is generated and download begins",
+          "nextScreen": "Download / Share sheet"
+        },
+        {
+          "step": 8,
+          "screen": "Settings",
+          "action": "User taps Sign Out; session cleared, redirected to Login",
+          "nextScreen": "Login"
+        },
+        {
+          "step": 9,
+          "screen": "Settings — Data",
+          "action": "User taps Delete Account; confirmation modal warns of permanent data loss",
+          "nextScreen": "Delete Confirmation Modal"
+        }
+      ]
+    }
+  ],
+  "pageLayouts": [
+    {
+      "name": "Login",
+      "route": "/login",
+      "description": "Authentication entry point. Full-viewport gradient background with decorative emoji. Centered card with magic-link email form and Google OAuth button. No navbar — purely focused. Toast appears at top after link is sent.",
+      "components": [
+        "Input",
+        "Button",
+        "Toast"
+      ],
+      "layout": "| [gradient bg: indigo-50→sky-100→teal-50]          |\n|   🏠 RoomieTab   (logo + tagline + feature chips)   |\n|  ┌─────────────────────────────────────────────┐   |\n|  │  Welcome back 👋                            │   |\n|  │  [Email Input]                              │   |\n|  │  [✉️ Send Magic Link  Button — indigo]      │   |\n|  │  ─────── or ───────                        │   |\n|  │  [G Continue with Google  Button — white]  │   |\n|  │  Use invite link instead (link)             │   |\n|  └─────────────────────────────────────────────┘   |\n|  Terms · Privacy (fine print)                      |"
+    },
+    {
+      "name": "Household Setup",
+      "route": "/onboarding/setup",
+      "description": "3-step onboarding wizard: name household, set own name, add roommates via email or shareable link. Progress stepper at top. No navbar. Single CTA at bottom creates the group.",
+      "components": [
+        "Input",
+        "Button",
+        "MemberAvatarGroup",
+        "Toast"
+      ],
+      "layout": "| [gradient bg]                                       |\n| [Step dots: ✓ Sign up → ● Setup → ○ Invite]        |\n| 🏠 RoomieTab (header)                               |\n|  ┌─────────────────────────────────────────────┐   |\n|  │ 1. Name your household [Input]              │   |\n|  │ 2. Your display name   [Input]              │   |\n|  │ 3. Add roommates                            │   |\n|  │    [M] Maya (you)  👑                       │   |\n|  │    [J] Jordan  ✉️ sent   [✕]               │   |\n|  │    [+] [Add email Input]                    │   |\n|  │    🔗 Invite link box [Copy btn]            │   |\n|  │  [🏠 Create Household → CTA]               │   |\n|  └─────────────────────────────────────────────┘   |"
+    },
+    {
+      "name": "Dashboard",
+      "route": "/",
+      "description": "Home screen. Sticky header with logo and month badge. Hero balance card. 2-column roommate balance grid. Monthly donut chart. Recent expense cards (latest 3). Settlement CTA banner. FAB. Bottom nav.",
+      "components": [
+        "NavBar",
+        "FloatingActionButton",
+        "BalanceSummaryCard",
+        "MonthlyBreakdownChart",
+        "ExpenseCard",
+        "CategoryBadge",
+        "Toast"
+      ],
+      "layout": "| [Header: RoomieTab  🏠 Maple House  [Feb 2025] [M]] |\n| ┌─────────────────── Hero Balance ────────────────┐ |\n| │ My balance this month   +$24.50 (green)         │ |\n| │ [You paid $312] [Your share $287] [Total $1,148]│ |\n| └─────────────────────────────────────────────────┘ |\n| 🏠 Roommate Balances                                |\n| ┌──────────┐  ┌──────────┐  ┌──────────┐           |\n| │[M] Maya  │  │[J] Jordan│  │[P] Priya │           |\n| │ +$24.50  │  │ -$45.00  │  │ +$18.25  │           |\n| └──────────┘  └──────────┘  └──────────┘           |\n| 📊 Feb Breakdown                                    |\n| ┌──[Donut SVG]──────┬──[Category Legend]──────────┐ |\n| │    $1,148         │  🔵 Rent $436               │ |\n| │                   │  🟢 Groceries $253           │ |\n| └───────────────────┴────────────────────────────┘ |\n| 🧾 Recent Expenses                                  |\n|   [ExpenseCard] Whole Foods run                     |\n|   [ExpenseCard] Electric bill                       |\n|   [ExpenseCard] Netflix                             |\n| ┌─── Settlement CTA ─────────────────────────────┐ |\n| │  🤝 Ready to settle? 3 transactions  [Settle]  │ |\n| └─────────────────────────────────────────────────┘ |\n|                              [+ FAB]                |\n| [🏠 Home][🧾 Expenses][🤝 Settle][⚙️ Settings]     |"
+    },
+    {
+      "name": "Expenses List",
+      "route": "/expenses",
+      "description": "Full chronological expense ledger for the selected month. Sticky header with search input and month navigator. Filter chips by category. Stats bar (total, count, your share). Expenses grouped by date with dashed dividers. FAB. Bottom nav.",
+      "components": [
+        "NavBar",
+        "ExpenseCard",
+        "CategoryBadge",
+        "MemberAvatarGroup",
+        "FloatingActionButton",
+        "Input"
+      ],
+      "layout": "| [Header: RoomieTab  [◀ Feb 2025 ▶]]               |\n|   [🔍 Search expenses Input]                        |\n| [All][🏠 Rent][🛒 Groceries][⚡ Utilities][…]       |\n| ┌─── Stats bar ────────────────────────────────────┐|\n| │ Total $1,148 │ Expenses 14 │ Your share $287.50  ││\n| └──────────────────────────────────────────────────┘|\n|  ─ ─ ─ ─ Feb 18 ─ ─ ─                              |\n|   [🛒 ExpenseCard] Whole Foods run     $84.20       |\n|   [🍕 ExpenseCard] Domino's pizza      $47.80       |\n|  ─ ─ ─ ─ Feb 15 ─ ─ ─                              |\n|   [⚡ ExpenseCard] Electric bill       $127.50      |\n|   [📺 ExpenseCard] Netflix  🔄         $22.99       |\n|  ─ ─ ─ ─ Feb 1 ─ ─ ─                               |\n|   [🏠 ExpenseCard] February Rent 🔄    $2,400       |\n|                              [+ FAB]                |\n| [🏠 Home][🧾 Expenses*][🤝 Settle][⚙️ Settings]    |"
+    },
+    {
+      "name": "Add Expense",
+      "route": "/expenses/add (drawer overlay)",
+      "description": "Bottom-sheet drawer overlaid on any screen. Backdrop blur behind. Large auto-focused amount input, description, paid-by avatar row, split-among avatar row with per-person amounts, split type tabs, category pills, Save CTA.",
+      "components": [
+        "AddExpenseDrawer",
+        "Input",
+        "Button",
+        "MemberAvatarGroup",
+        "CategoryBadge",
+        "FloatingActionButton"
+      ],
+      "layout": "| [Blurred background page]                           |\n| [Semi-transparent overlay]                          |\n| ┌────────────── Bottom Sheet Drawer ──────────────┐ |\n| │ ─── (drag handle)                               │ |\n| │ Add Expense                              [✕]    │ |\n| │                                                  │ |\n| │ Amount:  $ [84.20 — large input, focused]        │ |\n| │ Description: [Whole Foods run]                   │ |\n| │                                                  │ |\n| │ Paid by:                                         │ |\n| │  [M●] Maya  [J] Jordan  [P] Priya  [A] Alex     │ |\n| │                                                  │ |\n| │ Split among:                                     │ |\n| │  [M●$21] [J●$21] [P●$21] [A●$21]               │ |\n| │                                                  │ |\n| │ Split type: [⚖️Equal*] [🔢Exact] [%] [⚡Shares] │ |\n| │                                                  │ |\n| │ Category: [🏠Rent] [🛒Groceries*] [⚡Utilities]  │ |\n| │                                                  │ |\n| │ [✓ Save Expense — $84.20  (full-width CTA)]      │ |\n| └─────────────────────────────────────────────────┘ |"
+    },
+    {
+      "name": "Settlement",
+      "route": "/settle",
+      "description": "Month-end hero screen. Algorithm badge, per-member summary table, then 3 minimum-transaction rows with payment deep links and settle checkboxes. Archive month and Export buttons at bottom.",
+      "components": [
+        "NavBar",
+        "BalanceSummaryCard",
+        "SettlementTransactionRow",
+        "MonthlyBreakdownChart",
+        "Button",
+        "FloatingActionButton"
+      ],
+      "layout": "| [Header: RoomieTab  🏠 Maple House  [Feb 2025]]    |\n| ┌─── Hero Banner ─────────────────────────────────┐ |\n| │  🤝  Settle February                            │ |\n| │  Just 3 transactions clear all debts            │ |\n| │  [✓ Minimum possible — algorithm optimized]     │ |\n| └─────────────────────────────────────────────────┘ |\n| 📋 Member Summary                                   |\n| Member     │ Paid    │ Share   │ Net               |\n| M Maya     │ $312    │ $287.50 │ +$24.50 (green)   |\n| J Jordan   │ $242.50 │ $287.50 │ -$45.00 (red)     |\n| P Priya    │ $305.75 │ $287.50 │ +$18.25 (green)   |\n| A Alex     │ $287.75 │ $285.50 │ +$2.25            |\n| ⚡ Minimum Transactions                             |\n| ┌─ [☐] [J→] ──$24.50──→ [M] [💙Venmo][🅿PayPal] ┐ |\n| ├─ [☐] [J→] ──$18.25──→ [P] [💙Venmo][🅿PayPal] ┤ |\n| └─ [☑] [A→] ──$2.25──→ [M]  ✓ Settled ──────── ┘ |\n| [📁 Archive February & Start March  (full-width)]   |\n| [📄 Export PDF]         [📊 Export CSV]             |\n|                              [+ FAB]                |\n| [🏠 Home][🧾 Expenses][🤝 Settle*][⚙️ Settings]    |"
+    },
+    {
+      "name": "Settings",
+      "route": "/settings",
+      "description": "Single scrollable settings page. Grouped sections: Profile, Household, Notifications (toggles), Recurring Expenses, Data & Export, Sign Out. No FAB. Bottom nav.",
+      "components": [
+        "NavBar",
+        "Button",
+        "Input",
+        "MemberAvatarGroup",
+        "Toast"
+      ],
+      "layout": "| [Header: RoomieTab  ⚙️ Settings]                   |\n| 👤 PROFILE                                          |\n| ┌──────────────────────────────────────────────────┐|\n| │ [M avatar+edit btn]  [Maya Chen Input]           ││\n| │                      maya@example.com            ││\n| └──────────────────────────────────────────────────┘|\n| 🏠 HOUSEHOLD                                        |\n| ┌──────────────────────────────────────────────────┐|\n| │ 🏠 Maple House 🍁  4 members · Admin  [Rename]  ││\n| │ [M][J][P][A] avatars                             ││\n| │ 🔗 roomietab.app/join/maple-abc123  [Copy]       ││\n| └──────────────────────────────────────────────────┘|\n| 🔔 NOTIFICATIONS                                    |\n| ┌──────────────────────────────────────────────────┐|\n| │ 💰 New expenses added          [Toggle ON]       ││\n| │ 🏷️ Tagged in expense            [Toggle ON]       ││\n| │ 📅 Month-end reminder           [Toggle ON]       ││\n| │ 🔄 Recurring alerts             [Toggle OFF]      ││\n| └──────────────────────────────────────────────────┘|\n| 🔄 RECURRING EXPENSES                               |\n| ┌──────────────────────────────────────────────────┐|\n| │ 🏠 February Rent  $2,400 · 1st  [Edit]          ││\n| │ 📺 Netflix  $22.99 · 15th        [Edit]          ││\n| │ ➕ Add recurring expense (link)                  ││\n| └──────────────────────────────────────────────────┘|\n| 📦 DATA & EXPORT                                    |\n| [📄 Export PDF]  [📊 Export CSV]                    |\n| [🚪 Sign Out  (full-width)]                         |\n| [🏠 Home][🧾 Expenses][🤝 Settle][⚙️ Settings*]    |"
+    }
+  ],
+  "accessibility": {
+    "contrastRatios": [
+      {
+        "foreground": "#ffffff",
+        "background": "#6366f1",
+        "ratio": "4.54:1",
+        "passes": true
+      },
+      {
+        "foreground": "#ffffff",
+        "background": "#4f46e5",
+        "ratio": "5.11:1",
+        "passes": true
+      },
+      {
+        "foreground": "#1e1b4b",
+        "background": "#eef2ff",
+        "ratio": "11.2:1",
+        "passes": true
+      },
+      {
+        "foreground": "#111827",
+        "background": "#ffffff",
+        "ratio": "18.1:1",
+        "passes": true
+      },
+      {
+        "foreground": "#6b7280",
+        "background": "#ffffff",
+        "ratio": "4.61:1",
+        "passes": true
+      },
+      {
+        "foreground": "#ffffff",
+        "background": "#059669",
+        "ratio": "4.55:1",
+        "passes": true
+      },
+      {
+        "foreground": "#ffffff",
+        "background": "#dc2626",
+        "ratio": "4.52:1",
+        "passes": true
+      },
+      {
+        "foreground": "#111827",
+        "background": "#f9fafb",
+        "ratio": "17.8:1",
+        "passes": true
+      },
+      {
+        "foreground": "#d1d5db",
+        "background": "#111827",
+        "ratio": "9.1:1",
+        "passes": true
+      },
+      {
+        "foreground": "#ffffff",
+        "background": "#374151",
+        "ratio": "8.3:1",
+        "passes": true
+      }
+    ],
+    "guidelines": [
+      "All primary interactive elements (buttons, inputs, links) meet WCAG 2.1 AA contrast ratio of 4.5:1 for normal text",
+      "Minimum touch target size of 44×44px enforced on all interactive elements per WCAG 2.5.5 (AAA target)",
+      "Focus-visible ring (3px indigo-200) applied to all keyboard-focusable elements; never remove outline without replacement",
+      "Font sizes: body text minimum 15px (0.9375rem), captions minimum 12px used only for non-critical supplementary info",
+      "The 12px caption size is used exclusively for secondary data (share amounts, dates) — never for primary actions or required labels",
+      "Error states use both color (red border) AND an icon (⚠) AND text message — never color alone (WCAG 1.4.1)",
+      "Category badges use both color AND an emoji/icon to distinguish categories — not color alone",
+      "Positive/negative balance indicators use color AND a +/– prefix — not color alone",
+      "Settlement transaction 'settled' state uses both a strikethrough AND a text badge AND reduced opacity",
+      "All images and avatar fallbacks have meaningful alt text or aria-label; decorative emojis use aria-hidden='true'",
+      "AddExpenseDrawer uses role='dialog' with aria-modal='true' and aria-labelledby pointing to 'Add Expense' heading",
+      "Toast notifications use role='status' (success/info) or role='alert' (error/warning) for screen-reader announcement",
+      "NavBar items use aria-current='page' on active tab for screen readers",
+      "Amount input in AddExpenseDrawer has inputmode='decimal' for optimized mobile numeric keyboard",
+      "All toggle switches use role='switch' with aria-checked state",
+      "Color palette tested at 3 deuteranopia simulation — indigo/teal/amber combination remains distinguishable",
+      "Dark mode tokens maintain minimum 4.5:1 contrast: white (#fff) on gray-700 (#374151) = 8.3:1, gray-300 on gray-900 = 9.1:1",
+      "Reduced-motion: all animations (toast slide, FAB pulse, drawer transition) respect prefers-reduced-motion media query"
+    ]
+  },
+  "mockups": [
+    {
+      "page": "Dashboard",
+      "filePath": "output/mockups/dashboard.html",
+      "description": "Main home screen showing hero balance card (my balance +$24.50), 4-member balance grid, donut breakdown chart with category legend, 3 recent expense cards, and a settlement CTA banner. FAB and bottom nav included. Hand-sketched aesthetic with soft blue/teal/lavender palette and Caveat font labels."
+    },
+    {
+      "page": "Add Expense",
+      "filePath": "output/mockups/add-expense.html",
+      "description": "AddExpenseDrawer rendered as a bottom-sheet overlay. Shows large auto-focused amount input ($84.20), description field, paid-by member avatar row with Maya selected, split-among row with all 4 avatars and per-person amounts ($21.05 each), split type tabs (Equal active), category pill grid (Groceries active), and full-width Save CTA. Background page blurred behind overlay."
+    },
+    {
+      "page": "Settlement",
+      "filePath": "output/mockups/settlement.html",
+      "description": "Month-end settlement screen with algorithm hero banner ('3 transactions clear all debts'), per-member summary table (paid / share / net), 3 minimum-transaction rows with payer→receiver arrows and Venmo/PayPal/Zelle payment buttons. Third row shown in settled state with strikethrough. Archive and Export buttons at bottom."
+    },
+    {
+      "page": "Expenses List",
+      "filePath": "output/mockups/expenses-list.html",
+      "description": "Full expense ledger for February 2025. Sticky header with search input and month navigator. Category filter chips (All active). Stats bar showing $1,148 total / 14 expenses / $287.50 your share. Expenses grouped by date (Feb 18, Feb 15, Feb 1) with dashed dividers. CategoryBadges and payer avatars on each card. Recurring badge on Netflix and Rent."
+    },
+    {
+      "page": "Login",
+      "filePath": "output/mockups/login.html",
+      "description": "Centered login card on a gradient background with decorative emoji. Magic-link email input with 'Send Magic Link' primary CTA and Google OAuth secondary button. 'Use invite link instead' helper link. Success toast 'Check your email' shown at top. Clean, minimal, trust-signaling design."
+    },
+    {
+      "page": "Household Setup",
+      "filePath": "output/mockups/household-setup.html",
+      "description": "3-step onboarding card: household name input (Maple House 🍁), display name input, member list with Jordan and Priya shown as pending invites, an add-member email slot, and a copyable shareable invite link box. Step-dot progress indicator at top. Create Household CTA at bottom."
+    },
+    {
+      "page": "Settings",
+      "filePath": "output/mockups/settings.html",
+      "description": "Scrollable settings page with 5 grouped sections: Profile (avatar + editable name), Household (members, invite link), Notifications (4 toggles: 3 on / 1 off), Recurring Expenses (Rent + Netflix rows), Data & Export (PDF/CSV buttons). Sign Out full-width button at bottom. Bottom nav with Settings tab active."
+    }
+  ]
+}

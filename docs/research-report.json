@@ -1,0 +1,320 @@
+{
+  "productName": "RoomieTab",
+  "productDescription": "RoomieTab is a web-based roommate expense management app designed for groups of up to 5 people sharing a living space. It enables frictionless expense logging with flexible split rules, tracks who paid for what, and at month-end automatically calculates the minimum number of transactions needed to fully settle all balances. The focus is on radical simplicity: capturing an expense, assigning payers and participants, and splitting it should take under 10 seconds.",
+  "targetAudience": "College students, young professionals, and co-living residents aged 18–35 who share a home with 2–5 roommates and need a lightweight, always-in-sync tool to track monthly shared expenses (rent, utilities, groceries, subscriptions) and settle debts fairly with minimal friction.",
+  "competitors": [
+    {
+      "name": "Splitwise",
+      "url": "https://www.splitwise.com",
+      "strengths": [
+        "Market leader with the largest user base and brand recognition",
+        "Supports complex split types: equal, exact amounts, percentages, shares",
+        "Cross-platform (iOS, Android, Web) with reliable sync",
+        "Expense categories, labels, and notes for detailed tracking",
+        "Debt simplification to reduce total number of transactions"
+      ],
+      "weaknesses": [
+        "Free tier capped at ~3 expenses/day, frustrating for active households",
+        "UI feels dated and cluttered with ads on free tier",
+        "Pro subscription ($3/month or $30/year) required for receipt scanning and currency conversion",
+        "No real-time collaborative editing — requires manual refresh",
+        "Onboarding friction: all roommates must create accounts"
+      ],
+      "pricing": "Freemium — Free tier (limited to ~3 expenses/day, ad-supported); Splitwise Pro at $3/month or $30/year",
+      "marketShare": "Estimated market leader with 50M+ registered users globally"
+    },
+    {
+      "name": "Tricount",
+      "url": "https://tricount.com",
+      "strengths": [
+        "Completely free with no premium tier — no paywalls or ads",
+        "No account creation required for basic use (join via link)",
+        "Clean, minimalist UI focused on simplicity",
+        "Receipt scanning with OCR included for free",
+        "Multi-currency support and Excel/PDF export"
+      ],
+      "weaknesses": [
+        "No recurring expense support — every expense must be entered manually",
+        "Limited to single-group use per session — poor for users in multiple households",
+        "No push notifications or reminders for settlements",
+        "Lacks month-end summary or settlement scheduling workflow",
+        "No native integration with payment apps (Venmo, PayPal)"
+      ],
+      "pricing": "100% Free — no paid tier",
+      "marketShare": "Strong in Europe; estimated 10M+ users globally"
+    },
+    {
+      "name": "Settle Up",
+      "url": "https://settleup.io",
+      "strengths": [
+        "Excellent UI for visualizing individual balances (bubble/graph design)",
+        "Strong support for recurring expenses — ideal for roommates",
+        "Offline mode with automatic sync on reconnect",
+        "Supports custom split percentages and flexible assignment",
+        "Timeline view of all settlements per group"
+      ],
+      "weaknesses": [
+        "Premium subscription required for recurring payments, reminders, and Excel export",
+        "Smaller user base and community vs. Splitwise",
+        "No built-in minimum-transaction settlement algorithm surfaced clearly",
+        "Web app experience less polished than mobile",
+        "Limited integrations with payment platforms"
+      ],
+      "pricing": "Free (with ads); Premium subscription for advanced features (price varies by region, ~$2–4/month)",
+      "marketShare": "Niche but loyal user base; estimated 2–5M users"
+    },
+    {
+      "name": "Splid",
+      "url": "https://splid.app",
+      "strengths": [
+        "Best-in-class offline functionality — full use without internet",
+        "One-time payment model (no recurring subscription) for multi-group support",
+        "Fast, minimal expense entry UI",
+        "Printable and Excel-exportable summaries",
+        "Available on iOS and Android"
+      ],
+      "weaknesses": [
+        "No real-time sync — relies on manual data sharing between users",
+        "No web app — mobile only limits accessibility",
+        "One-time unlock fee may deter casual users",
+        "No push notifications or automated reminders",
+        "No receipt scanning or photo capture"
+      ],
+      "pricing": "Free for single group; one-time in-app purchase (~$4–6) for unlimited groups and export",
+      "marketShare": "Niche; popular in German-speaking markets, estimated 1–3M users"
+    },
+    {
+      "name": "Spliit",
+      "url": "https://spliit.app",
+      "strengths": [
+        "Fully open-source and self-hostable — privacy-first",
+        "No account required — share group via link",
+        "Zero ads, completely free with no premium upsell",
+        "Clean modern UI built with Next.js",
+        "Active open-source community driving rapid feature development"
+      ],
+      "weaknesses": [
+        "No native mobile app — PWA only, limiting push notification reliability",
+        "No real-time sync — requires page refresh to see updates",
+        "Minimal features compared to Splitwise (no receipt scan, no recurring expenses)",
+        "No payment app integrations",
+        "Self-hosting requires technical knowledge; hosted version has no SLA"
+      ],
+      "pricing": "100% Free (open source); self-hosted or use hosted version at spliit.app",
+      "marketShare": "Growing indie following; estimated <1M users but rapidly gaining traction"
+    }
+  ],
+  "marketAnalysis": {
+    "tam": "$612M (2025 global bill splitting and shared expense app market, per Research & Markets / 360iResearch)",
+    "sam": "$245M (English-speaking markets: US, UK, Canada, Australia — representing ~40% of global market, focused on co-living and roommate household segment)",
+    "som": "$2.5M (realistic 3-year target capturing ~1% of SAM via freemium web-first app targeting 18–35 urban renters; ~100K active monthly users at $2.50 ARPU)",
+    "trends": [
+      "Rising co-living and rental culture among millennials and Gen Z is expanding the addressable roommate-household segment — over 85M US adults used a bill-splitting app at least once in 2024",
+      "Shift toward web-first / PWA apps driven by users avoiding app store friction; no-download onboarding (share-a-link) is becoming a competitive differentiator",
+      "AI-assisted expense categorization and receipt OCR are rapidly becoming table-stakes features expected even on free tiers",
+      "Freemium fatigue: Splitwise's daily expense cap backlash is creating a significant opening for fully-free or one-time-purchase alternatives",
+      "Integration with P2P payment rails (Venmo, PayPal, Zelle, Wise) is increasingly expected to close the loop from tracking to actual settlement",
+      "Real-time collaborative features (instant sync, live balance updates) are emerging as a key differentiator over static, manual-refresh experiences"
+    ],
+    "growthRate": "~7–11% CAGR through 2030 (consensus across Market.us, Research & Markets, Cognitive Market Research); North America market alone valued at $205M in 2024"
+  },
+  "userPersonas": [
+    {
+      "name": "Maya Chen",
+      "age": "21",
+      "occupation": "Undergraduate Student (Computer Science)",
+      "goals": [
+        "Keep track of shared apartment costs (rent, groceries, utilities) without awkward money conversations",
+        "Settle up with 3 roommates at the end of each month using the fewest possible Venmo transactions",
+        "Spend less than 30 seconds logging an expense on her phone after a grocery run"
+      ],
+      "painPoints": [
+        "Splitwise's 3-expense/day free limit is constantly hit during busy weeks; won't pay $3/month for a basic tool",
+        "Roommates forget to log their purchases, leading to disputes and incomplete records at month-end",
+        "Group chats for expense tracking become chaotic and messages get buried"
+      ],
+      "techSavviness": "high"
+    },
+    {
+      "name": "Jordan Patel",
+      "age": "27",
+      "occupation": "Junior Software Engineer",
+      "goals": [
+        "Maintain a clear, fair record of who owes what across 4 roommates in a shared house",
+        "Automate recurring monthly expenses (Netflix, internet, rent) so they don't need to be re-entered",
+        "Export a monthly summary to review personal spending and budgeting"
+      ],
+      "painPoints": [
+        "Current spreadsheet-based system is manual, error-prone, and not visible to all roommates in real time",
+        "Calculating the minimum number of payments to settle complex multi-person balances is confusing and time-consuming",
+        "Roommates with varying financial situations need different split percentages for some bills, which most apps handle poorly"
+      ],
+      "techSavviness": "high"
+    },
+    {
+      "name": "Priya Nair",
+      "age": "24",
+      "occupation": "Marketing Coordinator",
+      "goals": [
+        "Avoid being the unofficial 'house treasurer' who manually tracks and reminds everyone about shared expenses",
+        "Have a simple, visual way to see her net balance at a glance without reading through transaction lists",
+        "Make sure all 5 housemates are on the same page about what's owed before the end of each month"
+      ],
+      "painPoints": [
+        "Not very confident with technology — wants an app that's as simple as sending a text, not a spreadsheet",
+        "Feels uncomfortable bringing up money with roommates face-to-face; prefers passive, app-driven reminders",
+        "Previous apps required everyone to create accounts, and half her roommates never bothered"
+      ],
+      "techSavviness": "medium"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "title": "Household Group Creation & Invite",
+      "description": "A user can create a household group (max 5 members) and invite roommates via a shareable link or email. Invitees can join without mandatory account creation for the first session (guest mode via magic link), reducing onboarding friction.",
+      "priority": "must-have",
+      "category": "functional"
+    },
+    {
+      "id": "REQ-002",
+      "title": "Quick Expense Entry",
+      "description": "Adding an expense must take under 10 seconds: enter amount, description, select who paid, and select who it's split among. Default split is equal among all members. The form must be accessible from a persistent floating action button on all screens.",
+      "priority": "must-have",
+      "category": "functional"
+    },
+    {
+      "id": "REQ-003",
+      "title": "Flexible Split Rules",
+      "description": "Each expense can be split by: (a) equal shares, (b) exact fixed amounts per person, (c) percentage-based allocation, or (d) custom shares/weights. The selected rule is remembered as the default for that expense category.",
+      "priority": "must-have",
+      "category": "functional"
+    },
+    {
+      "id": "REQ-004",
+      "title": "Month-End Settlement Summary with Minimum Transactions",
+      "description": "At any point (and auto-generated at month-end), the app computes and displays the minimum number of transactions required to fully settle all balances across the group, using a debt-simplification algorithm (e.g., greedy net-balance matching). Each suggested transaction shows payer, receiver, and exact amount.",
+      "priority": "must-have",
+      "category": "functional"
+    },
+    {
+      "id": "REQ-005",
+      "title": "Real-Time Sync via Supabase Realtime",
+      "description": "All expense additions, edits, and deletions are broadcast to all connected group members instantly via Supabase Realtime subscriptions (PostgreSQL change notifications). No manual refresh required — balances and expense lists update live.",
+      "priority": "must-have",
+      "category": "technical"
+    },
+    {
+      "id": "REQ-006",
+      "title": "Expense Categories & Tags",
+      "description": "Users can assign a category to each expense from a predefined list (Rent, Utilities, Groceries, Dining, Subscriptions, Transport, Household, Other) with optional free-text tags. Categories are used for monthly breakdown charts.",
+      "priority": "should-have",
+      "category": "functional"
+    },
+    {
+      "id": "REQ-007",
+      "title": "Recurring Expense Support",
+      "description": "Users can mark an expense as recurring (monthly) with a set day of month. The app auto-creates the expense entry each month via a Supabase Edge Function cron job, with a push notification to all members for confirmation.",
+      "priority": "should-have",
+      "category": "functional"
+    },
+    {
+      "id": "REQ-008",
+      "title": "Push Notifications & Settlement Reminders",
+      "description": "Members receive push notifications (via Web Push API / service worker) when: a new expense is added, they are tagged in an expense, a settlement is requested, and 3 days before month-end if unsettled balances exist. Notification preferences are user-configurable.",
+      "priority": "should-have",
+      "category": "functional"
+    },
+    {
+      "id": "REQ-009",
+      "title": "Payment App Deep Links",
+      "description": "On the settlement summary screen, each suggested transaction includes one-tap deep links to Venmo, PayPal, and Zelle pre-populated with the recipient and amount, reducing friction to zero for the actual payment step.",
+      "priority": "should-have",
+      "category": "functional"
+    },
+    {
+      "id": "REQ-010",
+      "title": "Monthly Expense History & Audit Log",
+      "description": "All expenses are stored with full history. Users can browse by month, filter by category or member, and see a timeline of all additions and edits. Deleted expenses are soft-deleted and visible to admins for dispute resolution.",
+      "priority": "must-have",
+      "category": "functional"
+    },
+    {
+      "id": "REQ-011",
+      "title": "Receipt Photo Capture & Storage",
+      "description": "Users can attach a photo of a receipt to any expense using device camera or file upload. Images are stored in Supabase Storage. Thumbnail is shown inline in the expense list; full image is viewable on tap.",
+      "priority": "nice-to-have",
+      "category": "functional"
+    },
+    {
+      "id": "REQ-012",
+      "title": "Performance — Sub-2s Page Load",
+      "description": "All primary screens (dashboard, expense list, add expense form, settlement summary) must achieve a Time to Interactive (TTI) under 2 seconds on a standard 4G connection. Achieved via Next.js 15 Server Components, edge caching on Vercel, and optimistic UI updates.",
+      "priority": "must-have",
+      "category": "non-functional"
+    },
+    {
+      "id": "REQ-013",
+      "title": "Mobile-First Responsive UI",
+      "description": "The app must be fully usable on mobile browsers (375px viewport and up) without a native app install, following a mobile-first design approach with Tailwind CSS. Touch targets must be ≥44px. The app should be installable as a PWA.",
+      "priority": "must-have",
+      "category": "non-functional"
+    },
+    {
+      "id": "REQ-014",
+      "title": "Secure Auth with Row-Level Security",
+      "description": "Authentication via Supabase Auth (email magic link + Google OAuth). All database tables enforce Row-Level Security (RLS) policies ensuring users can only read/write data belonging to their household group. No cross-group data leakage is permissible.",
+      "priority": "must-have",
+      "category": "technical"
+    },
+    {
+      "id": "REQ-015",
+      "title": "CSV / PDF Monthly Export",
+      "description": "Any member can export the current month's expenses as a CSV (for spreadsheet import) or a formatted PDF summary (for record-keeping or landlord documentation), generated server-side via a Supabase Edge Function.",
+      "priority": "nice-to-have",
+      "category": "functional"
+    }
+  ],
+  "risks": [
+    {
+      "risk": "Low roommate adoption — app value collapses if even one of 5 roommates refuses to use it",
+      "likelihood": "high",
+      "impact": "high",
+      "mitigation": "Implement zero-friction guest participation: roommates can view balances and confirm expenses via a shared link without creating an account. Only the 'treasurer' role requires a full account. Reduce signup barrier to a single magic-link email."
+    },
+    {
+      "risk": "Debt simplification algorithm produces incorrect or disputed settlement amounts due to floating-point rounding errors across multiple split types",
+      "likelihood": "medium",
+      "impact": "high",
+      "mitigation": "Store all monetary values as integers (cents) in PostgreSQL to eliminate floating-point arithmetic. Implement the minimum-transaction algorithm (net-balance greedy matching) in a Supabase Edge Function with a comprehensive test suite covering edge cases (uneven splits, 5-person groups, partial settlements)."
+    },
+    {
+      "risk": "Supabase Realtime connection limits and reliability issues cause stale balance displays, leading to user distrust",
+      "likelihood": "medium",
+      "impact": "medium",
+      "mitigation": "Implement optimistic UI updates on the client side so the UI feels instant regardless of server round-trip. Add a visible 'last synced' indicator and a manual refresh fallback. Design the data model so any screen can be fully reconstructed from a single REST query as a fallback to Realtime."
+    },
+    {
+      "risk": "Competing against fully-free incumbents (Tricount, Spliit) makes monetization extremely difficult without a compelling paid-tier feature",
+      "likelihood": "high",
+      "impact": "medium",
+      "mitigation": "Position the free tier as permanently unlimited for core features (no expense caps, no ads). Monetize via an optional 'RoomieTab Plus' tier ($1.99/month) offering receipt scanning with AI categorization, recurring expenses, CSV/PDF export, and payment reminders — features that create genuine time savings rather than artificial paywalls."
+    },
+    {
+      "risk": "Data privacy and financial data security concerns deter users from storing sensitive expense and payment data in a third-party app",
+      "likelihood": "low",
+      "impact": "high",
+      "mitigation": "Publish a clear, plain-English privacy policy committing to no data selling and no third-party advertising SDKs. Enforce Supabase RLS at the database level. Obtain SOC 2 Type I compliance as a mid-term goal. Offer a data export and account deletion flow on day one to signal trustworthiness."
+    }
+  ],
+  "keyInsights": [
+    "Splitwise's artificial 3-expense/day cap on the free tier is the single biggest pain point in the market — a permanently free, unlimited core tier is the strongest possible acquisition differentiator for RoomieTab.",
+    "The minimum-transaction settlement algorithm is the most technically novel and user-valued feature; no competitor surfaces this calculation as a first-class, prominent monthly workflow — it should be RoomieTab's hero feature.",
+    "Low adoption by all roommates is the #1 killer of group expense apps — zero-friction guest access via shareable link (no mandatory sign-up) is a critical product requirement, not a nice-to-have.",
+    "The bill splitting app market is growing at 7–11% CAGR, reaching ~$612M in 2025, with North America alone at $205M — there is clear, growing demand with no dominant mobile-web (PWA) player.",
+    "Recurring expense automation (rent, Netflix, utilities) is highly valued by the roommate segment specifically but is locked behind paywalls in most competitors — offering it free is a strong retention hook.",
+    "Next.js 15 Server Components + Supabase Realtime is a technically well-suited stack: SSR ensures fast initial loads for the dashboard, while Realtime subscriptions deliver the collaborative live-update experience that differentiates RoomieTab from static alternatives like Tricount and Spliit.",
+    "Payment app deep links (Venmo/PayPal/Zelle) that pre-fill recipient and amount close the 'last mile' gap between knowing what you owe and actually paying it — a workflow no current competitor has fully optimized.",
+    "The roommate-specific use case (fixed group, monthly cadence, recurring expenses) is underserved by travel-focused competitors like Tricount; positioning RoomieTab explicitly around monthly household management creates a clear, ownable niche."
+  ]
+}
