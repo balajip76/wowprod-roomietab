@@ -1,4 +1,5 @@
 import { createServerClient } from '@supabase/ssr'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
 import type { Database } from './types'
 
@@ -29,28 +30,19 @@ export async function createClient() {
   )
 }
 
-export async function createAdminClient() {
-  const cookieStore = await cookies()
-
-  return createServerClient<Database>(
+/**
+ * Create a Supabase admin client using the service_role key.
+ * Uses the plain @supabase/supabase-js client (NOT @supabase/ssr) so the
+ * service_role JWT is used directly — no cookie-based session override.
+ * This client bypasses RLS entirely.
+ */
+export function createAdminClient() {
+  return createSupabaseClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
     {
       db: { schema: 'roomietab' },
-      cookies: {
-        getAll() {
-          return cookieStore.getAll()
-        },
-        setAll(cookiesToSet: { name: string; value: string; options?: import('@supabase/ssr').CookieOptions }[]) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            )
-          } catch {
-            // Ignore in Server Components
-          }
-        },
-      },
+      auth: { persistSession: false },
     }
   )
 }
@@ -66,6 +58,6 @@ export async function getAuthenticatedClient() {
   if (error || !user) {
     return { user: null, db: null }
   }
-  const db = await createAdminClient()
+  const db = createAdminClient()
   return { user, db }
 }
