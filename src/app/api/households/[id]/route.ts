@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { getAuthenticatedClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
 export async function PUT(
@@ -7,18 +7,14 @@ export async function PUT(
 ) {
   try {
     const { id } = await params
-    const supabase = await createClient()
+    const { user, db } = await getAuthenticatedClient()
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
+    if (!user || !db) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     // Check admin role
-    const { data: member } = await supabase
+    const { data: member } = await db
       .schema('roomietab')
       .from('members')
       .select('role')
@@ -37,7 +33,7 @@ export async function PUT(
       return NextResponse.json({ error: 'Name is required' }, { status: 400 })
     }
 
-    const { data: household, error } = await supabase
+    const { data: household, error } = await db
       .schema('roomietab')
       .from('households')
       .update({ name: name.trim() })

@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { getAuthenticatedClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import { computeMemberSummaries, computeMinimumTransactions } from '@/lib/settlement-algorithm'
 import { getMonthStart, getMonthEnd } from '@/lib/utils'
@@ -6,13 +6,9 @@ import { parseISO } from 'date-fns'
 
 export async function POST(request: Request) {
   try {
-    const supabase = await createClient()
+    const { user, db } = await getAuthenticatedClient()
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
+    if (!user || !db) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -23,7 +19,7 @@ export async function POST(request: Request) {
     }
 
     // Verify membership
-    const { data: member } = await supabase
+    const { data: member } = await db
       .schema('roomietab')
       .from('members')
       .select('id')
@@ -41,7 +37,7 @@ export async function POST(request: Request) {
     const monthEnd = getMonthEnd(monthDate)
 
     // Get all active members
-    const { data: members } = await supabase
+    const { data: members } = await db
       .schema('roomietab')
       .from('members')
       .select('id, display_name')
@@ -49,7 +45,7 @@ export async function POST(request: Request) {
       .eq('is_active', true)
 
     // Get month's expenses
-    const { data: expenses } = await supabase
+    const { data: expenses } = await db
       .schema('roomietab')
       .from('expenses')
       .select('id, paid_by_member_id, amount_cents, is_deleted')
@@ -62,7 +58,7 @@ export async function POST(request: Request) {
 
     // Get splits
     const { data: splits } = expenseIds.length > 0
-      ? await supabase
+      ? await db
           .schema('roomietab')
           .from('expense_splits')
           .select('expense_id, member_id, amount_cents')

@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { getAuthenticatedClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
 export async function PUT(
@@ -7,13 +7,9 @@ export async function PUT(
 ) {
   try {
     const { id } = await params
-    const supabase = await createClient()
+    const { user, db } = await getAuthenticatedClient()
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
+    if (!user || !db) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -21,7 +17,7 @@ export async function PUT(
     const { description, amountCents, category, splitType, paidByMemberId, splitConfig, dayOfMonth, isActive } = body
 
     // Get existing template to verify membership
-    const { data: existing } = await supabase
+    const { data: existing } = await db
       .schema('roomietab')
       .from('recurring_templates')
       .select('household_id')
@@ -32,7 +28,7 @@ export async function PUT(
       return NextResponse.json({ error: 'Template not found' }, { status: 404 })
     }
 
-    const { data: member } = await supabase
+    const { data: member } = await db
       .schema('roomietab')
       .from('members')
       .select('id')
@@ -55,7 +51,7 @@ export async function PUT(
     if (dayOfMonth !== undefined) updateData.day_of_month = dayOfMonth
     if (isActive !== undefined) updateData.is_active = isActive
 
-    const { data: template, error } = await supabase
+    const { data: template, error } = await db
       .schema('roomietab')
       .from('recurring_templates')
       .update(updateData)
@@ -82,18 +78,14 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params
-    const supabase = await createClient()
+    const { user, db } = await getAuthenticatedClient()
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
+    if (!user || !db) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     // Get template to verify membership
-    const { data: existing } = await supabase
+    const { data: existing } = await db
       .schema('roomietab')
       .from('recurring_templates')
       .select('household_id')
@@ -104,7 +96,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Template not found' }, { status: 404 })
     }
 
-    const { data: member } = await supabase
+    const { data: member } = await db
       .schema('roomietab')
       .from('members')
       .select('id')
@@ -118,7 +110,7 @@ export async function DELETE(
     }
 
     // Soft-delete
-    const { error } = await supabase
+    const { error } = await db
       .schema('roomietab')
       .from('recurring_templates')
       .update({ is_active: false })

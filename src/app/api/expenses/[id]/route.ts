@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { getAuthenticatedClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
 interface SplitConfig {
@@ -14,18 +14,14 @@ export async function PUT(
 ) {
   try {
     const { id } = await params
-    const supabase = await createClient()
+    const { user, db } = await getAuthenticatedClient()
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
+    if (!user || !db) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     // Get existing expense to verify household membership
-    const { data: existing } = await supabase
+    const { data: existing } = await db
       .schema('roomietab')
       .from('expenses')
       .select('household_id, amount_cents')
@@ -38,7 +34,7 @@ export async function PUT(
     }
 
     // Verify membership
-    const { data: member } = await supabase
+    const { data: member } = await db
       .schema('roomietab')
       .from('members')
       .select('id')
@@ -74,7 +70,7 @@ export async function PUT(
     if (paidByMemberId !== undefined) updateData.paid_by_member_id = paidByMemberId
     if (expenseDate !== undefined) updateData.expense_date = expenseDate
 
-    const { data: expense, error: expenseError } = await supabase
+    const { data: expense, error: expenseError } = await db
       .schema('roomietab')
       .from('expenses')
       .update(updateData)
@@ -90,7 +86,7 @@ export async function PUT(
     let updatedSplits = null
     if (splits) {
       // Delete old splits
-      await supabase.schema('roomietab').from('expense_splits').delete().eq('expense_id', id)
+      await db.schema('roomietab').from('expense_splits').delete().eq('expense_id', id)
 
       // Insert new splits
       const splitRows = (splits as SplitConfig[]).map((s) => ({
@@ -101,7 +97,7 @@ export async function PUT(
         shares: s.shares ?? null,
       }))
 
-      const { data: newSplits, error: splitsError } = await supabase
+      const { data: newSplits, error: splitsError } = await db
         .schema('roomietab')
         .from('expense_splits')
         .insert(splitRows)
@@ -128,18 +124,14 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params
-    const supabase = await createClient()
+    const { user, db } = await getAuthenticatedClient()
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
+    if (!user || !db) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     // Get expense to verify household membership
-    const { data: existing } = await supabase
+    const { data: existing } = await db
       .schema('roomietab')
       .from('expenses')
       .select('household_id')
@@ -150,7 +142,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Expense not found' }, { status: 404 })
     }
 
-    const { data: member } = await supabase
+    const { data: member } = await db
       .schema('roomietab')
       .from('members')
       .select('id')
@@ -164,7 +156,7 @@ export async function DELETE(
     }
 
     // Soft delete
-    const { error } = await supabase
+    const { error } = await db
       .schema('roomietab')
       .from('expenses')
       .update({ is_deleted: true })

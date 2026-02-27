@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { getAuthenticatedClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import { getMonthStart, getMonthEnd, formatCents } from '@/lib/utils'
 import { parseISO, format } from 'date-fns'
@@ -6,13 +6,9 @@ import { computeMemberSummaries, computeMinimumTransactions } from '@/lib/settle
 
 export async function POST(request: Request) {
   try {
-    const supabase = await createClient()
+    const { user, db } = await getAuthenticatedClient()
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
+    if (!user || !db) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -23,7 +19,7 @@ export async function POST(request: Request) {
     }
 
     // Verify membership
-    const { data: member } = await supabase
+    const { data: member } = await db
       .schema('roomietab')
       .from('members')
       .select('id')
@@ -42,7 +38,7 @@ export async function POST(request: Request) {
     const monthLabel = format(monthDate, 'MMMM yyyy')
 
     // Get household
-    const { data: household } = await supabase
+    const { data: household } = await db
       .schema('roomietab')
       .from('households')
       .select('name')
@@ -50,7 +46,7 @@ export async function POST(request: Request) {
       .single()
 
     // Get members
-    const { data: members } = await supabase
+    const { data: members } = await db
       .schema('roomietab')
       .from('members')
       .select('id, display_name')
@@ -60,7 +56,7 @@ export async function POST(request: Request) {
     const memberMap = new Map((members ?? []).map((m) => [m.id, m.display_name]))
 
     // Get expenses
-    const { data: expenses } = await supabase
+    const { data: expenses } = await db
       .schema('roomietab')
       .from('expenses')
       .select('*')
@@ -72,7 +68,7 @@ export async function POST(request: Request) {
 
     const expenseIds = (expenses ?? []).map((e) => e.id)
     const { data: splits } = expenseIds.length > 0
-      ? await supabase
+      ? await db
           .schema('roomietab')
           .from('expense_splits')
           .select('*')

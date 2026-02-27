@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { getAuthenticatedClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
 interface SplitConfig {
@@ -10,13 +10,9 @@ interface SplitConfig {
 
 export async function POST(request: Request) {
   try {
-    const supabase = await createClient()
+    const { user, db } = await getAuthenticatedClient()
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
+    if (!user || !db) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -53,7 +49,7 @@ export async function POST(request: Request) {
     }
 
     // Verify user is a member of the household
-    const { data: member } = await supabase
+    const { data: member } = await db
       .schema('roomietab')
       .from('members')
       .select('id')
@@ -67,7 +63,7 @@ export async function POST(request: Request) {
     }
 
     // Create expense
-    const { data: expense, error: expenseError } = await supabase
+    const { data: expense, error: expenseError } = await db
       .schema('roomietab')
       .from('expenses')
       .insert({
@@ -100,7 +96,7 @@ export async function POST(request: Request) {
       shares: s.shares ?? null,
     }))
 
-    const { data: expenseSplits, error: splitsError } = await supabase
+    const { data: expenseSplits, error: splitsError } = await db
       .schema('roomietab')
       .from('expense_splits')
       .insert(splitRows)
@@ -108,7 +104,7 @@ export async function POST(request: Request) {
 
     if (splitsError) {
       // Rollback: delete expense
-      await supabase.schema('roomietab').from('expenses').delete().eq('id', expense.id)
+      await db.schema('roomietab').from('expenses').delete().eq('id', expense.id)
       return NextResponse.json({ error: splitsError.message }, { status: 500 })
     }
 

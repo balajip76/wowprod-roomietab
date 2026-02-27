@@ -1,17 +1,16 @@
 export const dynamic = 'force-dynamic'
 
-import { createClient } from '@/lib/supabase/server'
+import { getAuthenticatedClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { SettleClient } from './settle-client'
 import { formatMonthYear, getMonthEnd, getMonthStart } from '@/lib/utils'
 import { computeMemberSummaries, computeMinimumTransactions } from '@/lib/settlement-algorithm'
 
 export default async function SettlePage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  const { user, db } = await getAuthenticatedClient()
+  if (!user || !db) redirect('/login')
 
-  const { data: member } = await supabase
+  const { data: member } = await db
     .schema('roomietab')
     .from('members')
     .select('*, household:household_id(id, name)')
@@ -26,14 +25,14 @@ export default async function SettlePage() {
   const monthStart = getMonthStart(now)
   const monthEnd = getMonthEnd(now)
 
-  const { data: members } = await supabase
+  const { data: members } = await db
     .schema('roomietab')
     .from('members')
     .select('*')
     .eq('household_id', householdId)
     .eq('is_active', true)
 
-  const { data: expenses } = await supabase
+  const { data: expenses } = await db
     .schema('roomietab')
     .from('expenses')
     .select('*')
@@ -44,7 +43,7 @@ export default async function SettlePage() {
 
   const expenseIds = (expenses ?? []).map((e) => e.id)
   const { data: splits } = expenseIds.length > 0
-    ? await supabase
+    ? await db
         .schema('roomietab')
         .from('expense_splits')
         .select('*')

@@ -1,15 +1,11 @@
-import { createClient } from '@/lib/supabase/server'
+import { getAuthenticatedClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
 export async function POST(request: Request) {
   try {
-    const supabase = await createClient()
+    const { user, db } = await getAuthenticatedClient()
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
+    if (!user || !db) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -34,7 +30,7 @@ export async function POST(request: Request) {
     }
 
     // Verify membership
-    const { data: member } = await supabase
+    const { data: member } = await db
       .schema('roomietab')
       .from('members')
       .select('id')
@@ -47,7 +43,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Not a member of this household' }, { status: 403 })
     }
 
-    const { data: template, error } = await supabase
+    const { data: template, error } = await db
       .schema('roomietab')
       .from('recurring_templates')
       .insert({

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RoomieTab - Settlement</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sketch: ['Caveat', 'cursive'],
+            body: ['Inter', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen pb-24">
+
+  <!-- Status Bar Spacer -->
+  <div class="h-6 bg-gradient-to-r from-indigo-500 to-indigo-600"></div>
+
+  <!-- Top Header -->
+  <div class="max-w-md mx-auto px-4 pt-4 pb-2 flex items-center gap-3">
+    <a href="dashboard.html" class="w-9 h-9 rounded-full bg-indigo-50 flex items-center justify-center border border-indigo-200">
+      <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
+    </a>
+    <div>
+      <h1 class="font-sketch text-2xl font-bold text-indigo-900">Settlement</h1>
+      <p class="text-xs text-gray-400">February 2025</p>
+    </div>
+  </div>
+
+  <div class="max-w-md mx-auto px-4 space-y-5 mt-2">
+
+    <!-- Algorithm Hero Banner -->
+    <div class="bg-gradient-to-br from-teal-500 via-teal-500 to-emerald-500 rounded-2xl p-5 text-white shadow-lg shadow-teal-200 relative overflow-hidden">
+      <div class="absolute top-0 right-0 w-28 h-28 bg-white/10 rounded-full -translate-y-10 translate-x-10"></div>
+      <div class="absolute bottom-0 left-0 w-20 h-20 bg-white/10 rounded-full translate-y-8 -translate-x-8"></div>
+      <div class="flex items-center gap-3 mb-2">
+        <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+          <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        </div>
+        <div>
+          <h2 class="font-sketch text-2xl font-bold">Smart Settlement</h2>
+          <p class="text-teal-100 text-sm">Minimized transactions</p>
+        </div>
+      </div>
+      <div class="bg-white/20 rounded-xl p-3 mt-3 flex items-center gap-3">
+        <div class="text-3xl font-bold">3</div>
+        <div>
+          <p class="text-sm font-medium">transactions clear all debts</p>
+          <p class="text-xs text-teal-100">Instead of 6 individual payments</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Per-Member Summary Table -->
+    <div class="bg-white rounded-2xl shadow-sm border border-indigo-100 overflow-hidden">
+      <div class="px-5 py-3 border-b border-indigo-50">
+        <h3 class="font-sketch text-lg text-indigo-900">Member Summary</h3>
+      </div>
+      <!-- Table Header -->
+      <div class="grid grid-cols-4 px-5 py-2 bg-indigo-50 text-xs font-semibold text-indigo-400 uppercase tracking-wider">
+        <span>Member</span>
+        <span class="text-right">Paid</span>
+        <span class="text-right">Share</span>
+        <span class="text-right">Net</span>
+      </div>
+      <!-- Jordan -->
+      <div class="grid grid-cols-4 px-5 py-3 items-center border-b border-gray-50">
+        <div class="flex items-center gap-2">
+          <div class="w-6 h-6 rounded-full bg-indigo-500 text-white flex items-center justify-center text-[10px] font-bold">JD</div>
+          <span class="text-sm text-gray-800">Jordan</span>
+        </div>
+        <span class="text-sm text-gray-600 text-right">$411.00</span>
+        <span class="text-sm text-gray-600 text-right">$287.50</span>
+        <span class="text-sm font-semibold text-emerald-500 text-right">+$123.50</span>
+      </div>
+      <!-- Maya -->
+      <div class="grid grid-cols-4 px-5 py-3 items-center border-b border-gray-50">
+        <div class="flex items-center gap-2">
+          <div class="w-6 h-6 rounded-full bg-teal-500 text-white flex items-center justify-center text-[10px] font-bold">MA</div>
+          <span class="text-sm text-gray-800">Maya</span>
+        </div>
+        <span class="text-sm text-gray-600 text-right">$184.20</span>
+        <span class="text-sm text-gray-600 text-right">$287.50</span>
+        <span class="text-sm font-semibold text-red-500 text-right">-$103.30</span>
+      </div>
+      <!-- Priya -->
+      <div class="grid grid-cols-4 px-5 py-3 items-center border-b border-gray-50">
+        <div class="flex items-center gap-2">
+          <div class="w-6 h-6 rounded-full bg-amber-500 text-white flex items-center justify-center text-[10px] font-bold">PR</div>
+          <span class="text-sm text-gray-800">Priya</span>
+        </div>
+        <span class="text-sm text-gray-600 text-right">$222.99</span>
+        <span class="text-sm text-gray-600 text-right">$287.50</span>
+        <span class="text-sm font-semibold text-red-500 text-right">-$64.51</span>
+      </div>
+      <!-- Alex -->
+      <div class="grid grid-cols-4 px-5 py-3 items-center">
+        <div class="flex items-center gap-2">
+          <div class="w-6 h-6 rounded-full bg-rose-500 text-white flex items-center justify-center text-[10px] font-bold">AX</div>
+          <span class="text-sm text-gray-800">Alex</span>
+        </div>
+        <span class="text-sm text-gray-600 text-right">$331.50</span>
+        <span class="text-sm text-gray-600 text-right">$287.50</span>
+        <span class="text-sm font-semibold text-emerald-500 text-right">+$44.00</span>
+      </div>
+    </div>
+
+    <!-- Minimum Transaction Rows -->
+    <div>
+      <h3 class="font-sketch text-lg text-indigo-900 mb-3">Settlement Plan</h3>
+      <div class="space-y-3">
+
+        <!-- Transaction 1: Maya -> Jordan -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-indigo-100">
+          <div class="flex items-center gap-3 mb-3">
+            <!-- Payer -->
+            <div class="flex items-center gap-2 flex-1">
+              <div class="w-9 h-9 rounded-full bg-teal-500 text-white flex items-center justify-center text-xs font-bold">MA</div>
+              <div>
+                <p class="text-sm font-semibold text-gray-800">Maya</p>
+                <p class="text-[10px] text-gray-400">pays</p>
+              </div>
+            </div>
+            <!-- Arrow -->
+            <div class="flex flex-col items-center">
+              <span class="text-lg font-bold text-indigo-600">$103.30</span>
+              <svg class="w-8 h-4 text-indigo-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 12"><path d="M2 6h18m0 0l-4-4m4 4l-4 4"/></svg>
+            </div>
+            <!-- Receiver -->
+            <div class="flex items-center gap-2 flex-1 justify-end">
+              <div>
+                <p class="text-sm font-semibold text-gray-800 text-right">Jordan</p>
+                <p class="text-[10px] text-gray-400 text-right">receives</p>
+              </div>
+              <div class="w-9 h-9 rounded-full bg-indigo-500 text-white flex items-center justify-center text-xs font-bold">JD</div>
+            </div>
+          </div>
+          <!-- Payment Buttons -->
+          <div class="flex gap-2">
+            <button class="flex-1 bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold py-2 rounded-xl flex items-center justify-center gap-1 transition">
+              <span>Venmo</span>
+            </button>
+            <button class="flex-1 bg-sky-500 hover:bg-sky-600 text-white text-xs font-semibold py-2 rounded-xl flex items-center justify-center gap-1 transition">
+              <span>PayPal</span>
+            </button>
+            <button class="flex-1 bg-purple-500 hover:bg-purple-600 text-white text-xs font-semibold py-2 rounded-xl flex items-center justify-center gap-1 transition">
+              <span>Zelle</span>
+            </button>
+            <button class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-semibold py-2 rounded-xl transition">
+              Mark Paid
+            </button>
+          </div>
+        </div>
+
+        <!-- Transaction 2: Priya -> Alex -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-indigo-100">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="flex items-center gap-2 flex-1">
+              <div class="w-9 h-9 rounded-full bg-amber-500 text-white flex items-center justify-center text-xs font-bold">PR</div>
+              <div>
+                <p class="text-sm font-semibold text-gray-800">Priya</p>
+                <p class="text-[10px] text-gray-400">pays</p>
+              </div>
+            </div>
+            <div class="flex flex-col items-center">
+              <span class="text-lg font-bold text-indigo-600">$44.00</span>
+              <svg class="w-8 h-4 text-indigo-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 12"><path d="M2 6h18m0 0l-4-4m4 4l-4 4"/></svg>
+            </div>
+            <div class="flex items-center gap-2 flex-1 justify-end">
+              <div>
+                <p class="text-sm font-semibold text-gray-800 text-right">Alex</p>
+                <p class="text-[10px] text-gray-400 text-right">receives</p>
+              </div>
+              <div class="w-9 h-9 rounded-full bg-rose-500 text-white flex items-center justify-center text-xs font-bold">AX</div>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <button class="flex-1 bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold py-2 rounded-xl transition">Venmo</button>
+            <button class="flex-1 bg-sky-500 hover:bg-sky-600 text-white text-xs font-semibold py-2 rounded-xl transition">PayPal</button>
+            <button class="flex-1 bg-purple-500 hover:bg-purple-600 text-white text-xs font-semibold py-2 rounded-xl transition">Zelle</button>
+            <button class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-semibold py-2 rounded-xl transition">Mark Paid</button>
+          </div>
+        </div>
+
+        <!-- Transaction 3: Priya -> Jordan (SETTLED) -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-emerald-200 relative overflow-hidden">
+          <!-- Settled overlay stripe -->
+          <div class="absolute top-0 right-0 bg-emerald-500 text-white text-[10px] font-bold px-3 py-0.5 rounded-bl-lg">SETTLED</div>
+          <div class="flex items-center gap-3 mb-3 opacity-60">
+            <div class="flex items-center gap-2 flex-1">
+              <div class="w-9 h-9 rounded-full bg-amber-500 text-white flex items-center justify-center text-xs font-bold">PR</div>
+              <div>
+                <p class="text-sm font-semibold text-gray-800">Priya</p>
+                <p class="text-[10px] text-gray-400">paid</p>
+              </div>
+            </div>
+            <div class="flex flex-col items-center">
+              <span class="text-lg font-bold text-gray-400 line-through">$20.51</span>
+              <svg class="w-8 h-4 text-gray-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 12"><path d="M2 6h18m0 0l-4-4m4 4l-4 4"/></svg>
+            </div>
+            <div class="flex items-center gap-2 flex-1 justify-end">
+              <div>
+                <p class="text-sm font-semibold text-gray-800 text-right">Jordan</p>
+                <p class="text-[10px] text-gray-400 text-right">received</p>
+              </div>
+              <div class="w-9 h-9 rounded-full bg-indigo-500 text-white flex items-center justify-center text-xs font-bold">JD</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 bg-emerald-50 rounded-xl px-3 py-2">
+            <svg class="w-5 h-5 text-emerald-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/></svg>
+            <span class="text-xs text-emerald-700 font-medium">Settled via Venmo on Feb 20</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Archive & Export -->
+    <div class="flex gap-3">
+      <button class="flex-1 bg-indigo-500 hover:bg-indigo-600 text-white font-semibold text-sm py-3 rounded-2xl shadow-md shadow-indigo-200 flex items-center justify-center gap-2 transition">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
+        Archive Month
+      </button>
+      <button class="flex-1 bg-white hover:bg-gray-50 text-indigo-600 font-semibold text-sm py-3 rounded-2xl border-2 border-indigo-200 flex items-center justify-center gap-2 transition">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        Export PDF
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Bottom Navigation -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 shadow-lg z-40">
+    <div class="max-w-md mx-auto flex items-center justify-around py-2">
+      <a href="dashboard.html" class="flex flex-col items-center gap-0.5 text-gray-400">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1h-2z"/></svg>
+        <span class="text-[10px]">Home</span>
+      </a>
+      <a href="expenses-list.html" class="flex flex-col items-center gap-0.5 text-gray-400">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        <span class="text-[10px]">Expenses</span>
+      </a>
+      <div class="w-14"></div>
+      <a href="settlement.html" class="flex flex-col items-center gap-0.5 text-indigo-600">
+        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+        <span class="text-[10px] font-semibold">Settle</span>
+      </a>
+      <a href="settings.html" class="flex flex-col items-center gap-0.5 text-gray-400">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
+        <span class="text-[10px]">Settings</span>
+      </a>
+    </div>
+  </nav>
+
+</body>
+</html>

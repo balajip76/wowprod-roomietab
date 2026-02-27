@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { getAuthenticatedClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
 export async function PATCH(
@@ -7,13 +7,9 @@ export async function PATCH(
 ) {
   try {
     const { id } = await params
-    const supabase = await createClient()
+    const { user, db } = await getAuthenticatedClient()
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
+    if (!user || !db) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -24,7 +20,7 @@ export async function PATCH(
     }
 
     // Verify household membership via settlement join
-    const { data: txn } = await supabase
+    const { data: txn } = await db
       .schema('roomietab')
       .from('settlement_transactions')
       .select('id, settlement_id, settlements!inner(household_id)')
@@ -38,7 +34,7 @@ export async function PATCH(
     const settlementsData = txn.settlements as unknown as { household_id: string }
     const householdId = settlementsData.household_id
 
-    const { data: member } = await supabase
+    const { data: member } = await db
       .schema('roomietab')
       .from('members')
       .select('id')
@@ -51,7 +47,7 @@ export async function PATCH(
       return NextResponse.json({ error: 'Not authorized' }, { status: 403 })
     }
 
-    const { data: transaction, error } = await supabase
+    const { data: transaction, error } = await db
       .schema('roomietab')
       .from('settlement_transactions')
       .update({

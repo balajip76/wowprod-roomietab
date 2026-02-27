@@ -1,6 +1,6 @@
 export const dynamic = 'force-dynamic'
 
-import { createClient } from '@/lib/supabase/server'
+import { getAuthenticatedClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { DashboardClient } from './dashboard-client'
 import { formatMonthYear, getMonthEnd, getMonthStart } from '@/lib/utils'
@@ -8,13 +8,11 @@ import { computeMemberSummaries, computeMinimumTransactions } from '@/lib/settle
 import type { Category } from '@/lib/constants'
 
 export default async function DashboardPage() {
-  const supabase = await createClient()
-
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  const { user, db } = await getAuthenticatedClient()
+  if (!user || !db) redirect('/login')
 
   // Get user's household member record
-  const { data: member } = await supabase
+  const { data: member } = await db
     .schema('roomietab')
     .from('members')
     .select('*, household:household_id(id, name, invite_code)')
@@ -30,7 +28,7 @@ export default async function DashboardPage() {
   const monthEnd = getMonthEnd(now)
 
   // Get all household members
-  const { data: members } = await supabase
+  const { data: members } = await db
     .schema('roomietab')
     .from('members')
     .select('*')
@@ -39,7 +37,7 @@ export default async function DashboardPage() {
     .order('joined_at')
 
   // Get this month's expenses
-  const { data: expenses } = await supabase
+  const { data: expenses } = await db
     .schema('roomietab')
     .from('expenses')
     .select('*')
@@ -52,7 +50,7 @@ export default async function DashboardPage() {
   // Get splits for this month's expenses
   const expenseIds = (expenses ?? []).map((e) => e.id)
   const { data: splits } = expenseIds.length > 0
-    ? await supabase
+    ? await db
         .schema('roomietab')
         .from('expense_splits')
         .select('*')

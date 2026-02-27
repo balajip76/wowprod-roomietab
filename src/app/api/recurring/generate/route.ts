@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { getAuthenticatedClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
 interface SplitConfigItem {
@@ -17,13 +17,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const supabase = await createClient()
+    const { db } = await getAuthenticatedClient()
+    if (!db) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const today = new Date()
     const dayOfMonth = today.getDate()
     const dateStr = today.toISOString().split('T')[0]
 
     // Get all active recurring templates for today's day
-    const { data: templates } = await supabase
+    const { data: templates } = await db
       .schema('roomietab')
       .from('recurring_templates')
       .select('*')
@@ -39,7 +43,7 @@ export async function POST(request: Request) {
     for (const template of templates) {
       try {
         // Get active household members for equal split
-        const { data: members } = await supabase
+        const { data: members } = await db
           .schema('roomietab')
           .from('members')
           .select('id')
@@ -74,7 +78,7 @@ export async function POST(request: Request) {
         }
 
         // Create expense
-        const { data: expense, error: expenseError } = await supabase
+        const { data: expense, error: expenseError } = await db
           .schema('roomietab')
           .from('expenses')
           .insert({
@@ -96,10 +100,10 @@ export async function POST(request: Request) {
 
         // Create splits
         const splitRows = splits.map((s) => ({ ...s, expense_id: expense.id }))
-        await supabase.schema('roomietab').from('expense_splits').insert(splitRows)
+        await db.schema('roomietab').from('expense_splits').insert(splitRows)
 
         // Update last_generated_at
-        await supabase
+        await db
           .schema('roomietab')
           .from('recurring_templates')
           .update({ last_generated_at: today.toISOString() })

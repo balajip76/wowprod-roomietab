@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { getAuthenticatedClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
 interface TransactionInput {
@@ -10,13 +10,9 @@ interface TransactionInput {
 
 export async function POST(request: Request) {
   try {
-    const supabase = await createClient()
+    const { user, db } = await getAuthenticatedClient()
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
+    if (!user || !db) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -27,7 +23,7 @@ export async function POST(request: Request) {
     }
 
     // Verify membership (any member can archive)
-    const { data: member } = await supabase
+    const { data: member } = await db
       .schema('roomietab')
       .from('members')
       .select('id')
@@ -45,7 +41,7 @@ export async function POST(request: Request) {
     const monthStr = `${monthDate.getFullYear()}-${String(monthDate.getMonth() + 1).padStart(2, '0')}-01`
 
     // Create or update settlement record
-    const { data: settlement, error: settlementError } = await supabase
+    const { data: settlement, error: settlementError } = await db
       .schema('roomietab')
       .from('settlements')
       .upsert(
@@ -69,7 +65,7 @@ export async function POST(request: Request) {
     }
 
     // Delete existing transactions and re-create
-    await supabase
+    await db
       .schema('roomietab')
       .from('settlement_transactions')
       .delete()
@@ -87,7 +83,7 @@ export async function POST(request: Request) {
         settled_at: t.isSettled ? new Date().toISOString() : null,
       }))
 
-      const { data: txns, error: txnsError } = await supabase
+      const { data: txns, error: txnsError } = await db
         .schema('roomietab')
         .from('settlement_transactions')
         .insert(txnRows)

@@ -1,16 +1,12 @@
-import { createClient } from '@/lib/supabase/server'
+import { getAuthenticatedClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import { generateInviteCode } from '@/lib/utils'
 
 export async function POST(request: Request) {
   try {
-    const supabase = await createClient()
+    const { user, db } = await getAuthenticatedClient()
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
+    if (!user || !db) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -24,7 +20,7 @@ export async function POST(request: Request) {
     }
 
     // Check if user already has a household
-    const { data: existingMember } = await supabase
+    const { data: existingMember } = await db
       .schema('roomietab')
       .from('members')
       .select('id')
@@ -42,7 +38,7 @@ export async function POST(request: Request) {
     const inviteCode = generateInviteCode()
 
     // Create household
-    const { data: household, error: householdError } = await supabase
+    const { data: household, error: householdError } = await db
       .schema('roomietab')
       .from('households')
       .insert({
@@ -61,7 +57,7 @@ export async function POST(request: Request) {
     }
 
     // Create admin member
-    const { data: member, error: memberError } = await supabase
+    const { data: member, error: memberError } = await db
       .schema('roomietab')
       .from('members')
       .insert({
@@ -76,7 +72,7 @@ export async function POST(request: Request) {
 
     if (memberError || !member) {
       // Rollback: delete household
-      await supabase.schema('roomietab').from('households').delete().eq('id', household.id)
+      await db.schema('roomietab').from('households').delete().eq('id', household.id)
       return NextResponse.json(
         { error: memberError?.message ?? 'Failed to create member' },
         { status: 500 }

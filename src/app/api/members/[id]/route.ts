@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { getAuthenticatedClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
 export async function PUT(
@@ -7,13 +7,9 @@ export async function PUT(
 ) {
   try {
     const { id } = await params
-    const supabase = await createClient()
+    const { user, db } = await getAuthenticatedClient()
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
+    if (!user || !db) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -21,7 +17,7 @@ export async function PUT(
     const { displayName, avatarUrl, venmoHandle, paypalEmail, notificationPrefs } = body
 
     // Verify ownership — only the member themselves can update their profile
-    const { data: member } = await supabase
+    const { data: member } = await db
       .schema('roomietab')
       .from('members')
       .select('id, user_id')
@@ -39,7 +35,7 @@ export async function PUT(
     if (paypalEmail !== undefined) updateData.paypal_email = paypalEmail.trim() || null
     if (notificationPrefs !== undefined) updateData.notification_prefs = notificationPrefs
 
-    const { data: updatedMember, error } = await supabase
+    const { data: updatedMember, error } = await db
       .schema('roomietab')
       .from('members')
       .update(updateData)

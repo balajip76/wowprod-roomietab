@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RoomieTab - Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sketch: ['Caveat', 'cursive'],
+            body: ['Inter', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    @keyframes slideDown {
+      from { transform: translateY(-100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .toast-animate { animation: slideDown 0.4s ease-out; }
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    .float-1 { animation: float 3s ease-in-out infinite; }
+    .float-2 { animation: float 3.5s ease-in-out infinite 0.5s; }
+    .float-3 { animation: float 4s ease-in-out infinite 1s; }
+  </style>
+</head>
+<body class="min-h-screen relative overflow-hidden">
+
+  <!-- Gradient Background -->
+  <div class="absolute inset-0 bg-gradient-to-br from-indigo-500 via-indigo-600 to-purple-700"></div>
+
+  <!-- Background Decorative Elements -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <!-- Circles -->
+    <div class="absolute top-10 left-10 w-40 h-40 bg-white/5 rounded-full"></div>
+    <div class="absolute bottom-20 right-10 w-60 h-60 bg-white/5 rounded-full"></div>
+    <div class="absolute top-1/3 right-5 w-20 h-20 bg-white/10 rounded-full"></div>
+
+    <!-- Decorative Emoji -->
+    <div class="absolute top-20 left-8 text-4xl float-1 opacity-30">🏠</div>
+    <div class="absolute top-32 right-12 text-3xl float-2 opacity-30">💰</div>
+    <div class="absolute bottom-40 left-12 text-3xl float-3 opacity-30">🤝</div>
+    <div class="absolute bottom-60 right-8 text-4xl float-1 opacity-30">📊</div>
+    <div class="absolute top-52 left-1/2 text-2xl float-2 opacity-20">✨</div>
+  </div>
+
+  <!-- Success Toast -->
+  <div class="fixed top-4 left-4 right-4 z-50 toast-animate">
+    <div class="max-w-md mx-auto bg-emerald-500 text-white rounded-2xl px-5 py-3 shadow-lg flex items-center gap-3">
+      <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
+        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>
+      </div>
+      <div>
+        <p class="font-semibold text-sm">Check your email!</p>
+        <p class="text-xs text-emerald-100">We sent a magic link to jordan@email.com</p>
+      </div>
+      <button class="ml-auto text-white/70 hover:text-white flex-shrink-0">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Centered Login Card -->
+  <div class="relative z-10 min-h-screen flex items-center justify-center px-6 py-12">
+    <div class="max-w-sm w-full">
+
+      <!-- Logo & Branding -->
+      <div class="text-center mb-8">
+        <div class="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg border border-white/30">
+          <span class="text-3xl">🏡</span>
+        </div>
+        <h1 class="font-sketch text-5xl font-bold text-white mb-2">RoomieTab</h1>
+        <p class="text-indigo-200 text-sm">Split expenses with your housemates, hassle-free</p>
+      </div>
+
+      <!-- Login Card -->
+      <div class="bg-white rounded-3xl p-7 shadow-2xl shadow-indigo-900/30">
+
+        <div class="text-center mb-6">
+          <h2 class="font-sketch text-2xl font-bold text-indigo-900 mb-1">Welcome back!</h2>
+          <p class="text-sm text-gray-400">Sign in to your household</p>
+        </div>
+
+        <!-- Magic Link Email Input -->
+        <div class="space-y-4">
+          <div>
+            <label class="font-sketch text-base text-indigo-800 mb-1 block">Email address</label>
+            <div class="relative">
+              <svg class="w-5 h-5 text-gray-300 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+              <input
+                type="email"
+                value="jordan@email.com"
+                class="w-full bg-gray-50 rounded-xl pl-11 pr-4 py-3.5 text-sm text-gray-800 border border-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent placeholder-gray-300"
+                placeholder="you@email.com"
+              />
+            </div>
+          </div>
+
+          <!-- Send Magic Link CTA -->
+          <button class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold text-base py-3.5 rounded-xl shadow-lg shadow-indigo-200 transition flex items-center justify-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            Send Magic Link
+          </button>
+
+          <!-- Divider -->
+          <div class="flex items-center gap-3 my-1">
+            <div class="flex-1 border-t border-gray-200"></div>
+            <span class="text-xs text-gray-400 font-medium">or continue with</span>
+            <div class="flex-1 border-t border-gray-200"></div>
+          </div>
+
+          <!-- Google OAuth Button -->
+          <button class="w-full bg-white hover:bg-gray-50 text-gray-700 font-medium text-sm py-3.5 rounded-xl border-2 border-gray-200 transition flex items-center justify-center gap-3">
+            <svg class="w-5 h-5" viewBox="0 0 24 24">
+              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
+              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+            </svg>
+            Continue with Google
+          </button>
+        </div>
+
+        <!-- Invite Link Helper -->
+        <div class="text-center mt-5 pt-4 border-t border-gray-100">
+          <a href="household-setup.html" class="text-sm text-indigo-500 hover:text-indigo-600 font-medium transition">
+            Have an invite link? Join a household
+          </a>
+        </div>
+
+      </div>
+
+      <!-- Trust Signals -->
+      <div class="flex items-center justify-center gap-4 mt-6">
+        <div class="flex items-center gap-1.5 text-indigo-200">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"/></svg>
+          <span class="text-xs">Encrypted</span>
+        </div>
+        <div class="flex items-center gap-1.5 text-indigo-200">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/></svg>
+          <span class="text-xs">No password needed</span>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <p class="text-center text-indigo-300/50 text-xs mt-6">
+        By continuing, you agree to our Terms of Service and Privacy Policy
+      </p>
+
+    </div>
+  </div>
+
+</body>
+</html>

@@ -54,3 +54,18 @@ export async function createAdminClient() {
     }
   )
 }
+
+/**
+ * Verify the user is authenticated and return both the user and an admin DB client.
+ * Use this in API routes for database operations — the admin client (service_role)
+ * bypasses RLS, which is safe since auth is verified first via getUser().
+ */
+export async function getAuthenticatedClient() {
+  const supabase = await createClient()
+  const { data: { user }, error } = await supabase.auth.getUser()
+  if (error || !user) {
+    return { user: null, db: null }
+  }
+  const db = await createAdminClient()
+  return { user, db }
+}

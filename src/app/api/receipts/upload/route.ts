@@ -1,15 +1,11 @@
-import { createClient } from '@/lib/supabase/server'
+import { getAuthenticatedClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
 export async function POST(request: Request) {
   try {
-    const supabase = await createClient()
+    const { user, db } = await getAuthenticatedClient()
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
+    if (!user || !db) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -36,7 +32,7 @@ export async function POST(request: Request) {
     const arrayBuffer = await file.arrayBuffer()
     const buffer = new Uint8Array(arrayBuffer)
 
-    const { data, error } = await supabase.storage
+    const { data, error } = await db.storage
       .from('receipts')
       .upload(fileName, buffer, {
         contentType: file.type,
@@ -47,7 +43,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    const { data: urlData } = supabase.storage.from('receipts').getPublicUrl(data.path)
+    const { data: urlData } = db.storage.from('receipts').getPublicUrl(data.path)
 
     return NextResponse.json({ url: urlData.publicUrl }, { status: 201 })
   } catch (error) {

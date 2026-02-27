@@ -1,16 +1,12 @@
-import { createClient } from '@/lib/supabase/server'
+import { getAuthenticatedClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import { MAX_HOUSEHOLD_MEMBERS } from '@/lib/constants'
 
 export async function POST(request: Request) {
   try {
-    const supabase = await createClient()
+    const { user, db } = await getAuthenticatedClient()
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
+    if (!user || !db) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -21,7 +17,7 @@ export async function POST(request: Request) {
     }
 
     // Find household by invite code
-    const { data: household } = await supabase
+    const { data: household } = await db
       .schema('roomietab')
       .from('households')
       .select('id, name, invite_code')
@@ -33,7 +29,7 @@ export async function POST(request: Request) {
     }
 
     // Check if user already a member
-    const { data: existingMember } = await supabase
+    const { data: existingMember } = await db
       .schema('roomietab')
       .from('members')
       .select('id, household_id')
@@ -49,7 +45,7 @@ export async function POST(request: Request) {
     }
 
     // Check member count
-    const { count } = await supabase
+    const { count } = await db
       .schema('roomietab')
       .from('members')
       .select('id', { count: 'exact', head: true })
@@ -64,7 +60,7 @@ export async function POST(request: Request) {
     }
 
     // Join household
-    const { data: member, error } = await supabase
+    const { data: member, error } = await db
       .schema('roomietab')
       .from('members')
       .insert({

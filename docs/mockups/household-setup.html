@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RoomieTab - Household Setup</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sketch: ['Caveat', 'cursive'],
+            body: ['Inter', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-teal-50">
+
+  <!-- Top Decorative Bar -->
+  <div class="h-2 bg-gradient-to-r from-indigo-500 via-teal-500 to-indigo-500"></div>
+
+  <div class="max-w-md mx-auto px-6 py-8">
+
+    <!-- Logo -->
+    <div class="text-center mb-6">
+      <h1 class="font-sketch text-3xl font-bold text-indigo-900">RoomieTab</h1>
+      <p class="text-sm text-gray-400 mt-1">Set up your household</p>
+    </div>
+
+    <!-- Step Dot Progress -->
+    <div class="flex items-center justify-center gap-2 mb-8">
+      <div class="w-3 h-3 rounded-full bg-indigo-500 shadow-sm"></div>
+      <div class="w-8 h-0.5 bg-indigo-300 rounded-full"></div>
+      <div class="w-3 h-3 rounded-full bg-indigo-500 shadow-sm"></div>
+      <div class="w-8 h-0.5 bg-indigo-300 rounded-full"></div>
+      <div class="w-3 h-3 rounded-full bg-indigo-200 border-2 border-indigo-300"></div>
+    </div>
+
+    <!-- Step Labels -->
+    <div class="flex items-center justify-between px-4 mb-8">
+      <div class="text-center">
+        <div class="w-7 h-7 rounded-full bg-indigo-500 text-white flex items-center justify-center text-xs font-bold mx-auto mb-1">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>
+        </div>
+        <span class="text-[10px] text-indigo-600 font-medium">Name</span>
+      </div>
+      <div class="text-center">
+        <div class="w-7 h-7 rounded-full bg-indigo-500 text-white flex items-center justify-center text-xs font-bold mx-auto mb-1">2</div>
+        <span class="text-[10px] text-indigo-600 font-medium">Profile</span>
+      </div>
+      <div class="text-center">
+        <div class="w-7 h-7 rounded-full bg-indigo-200 text-indigo-400 flex items-center justify-center text-xs font-bold mx-auto mb-1">3</div>
+        <span class="text-[10px] text-gray-400 font-medium">Invite</span>
+      </div>
+    </div>
+
+    <!-- Main Onboarding Card -->
+    <div class="bg-white rounded-3xl p-6 shadow-lg shadow-indigo-100 border border-indigo-100">
+
+      <!-- Step 1: Household Name -->
+      <div class="mb-6">
+        <label class="font-sketch text-xl text-indigo-900 mb-2 block">Name your household</label>
+        <p class="text-xs text-gray-400 mb-3">Choose a fun name your housemates will recognize</p>
+        <div class="relative">
+          <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-lg">🏡</span>
+          <input
+            type="text"
+            value="Maple House"
+            class="w-full bg-indigo-50 rounded-xl pl-11 pr-4 py-3.5 text-sm font-semibold text-indigo-900 border-2 border-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-indigo-400 placeholder-gray-300"
+            placeholder="e.g., The Cozy Flat"
+          />
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div class="border-t-2 border-dashed border-indigo-100 my-6"></div>
+
+      <!-- Step 2: Display Name -->
+      <div class="mb-6">
+        <label class="font-sketch text-xl text-indigo-900 mb-2 block">Your display name</label>
+        <p class="text-xs text-gray-400 mb-3">How your housemates will see you</p>
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-full bg-indigo-500 text-white flex items-center justify-center text-lg font-bold flex-shrink-0">JD</div>
+          <input
+            type="text"
+            value="Jordan"
+            class="w-full bg-gray-50 rounded-xl px-4 py-3.5 text-sm text-gray-800 border border-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-300 placeholder-gray-300"
+            placeholder="Your name"
+          />
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div class="border-t-2 border-dashed border-indigo-100 my-6"></div>
+
+      <!-- Step 3: Members -->
+      <div class="mb-6">
+        <label class="font-sketch text-xl text-indigo-900 mb-2 block">Invite housemates</label>
+        <p class="text-xs text-gray-400 mb-4">Add your roommates by email</p>
+
+        <!-- Existing Members -->
+        <div class="space-y-2 mb-4">
+          <!-- You (Jordan) -->
+          <div class="flex items-center gap-3 bg-indigo-50 rounded-xl px-4 py-3 border border-indigo-100">
+            <div class="w-9 h-9 rounded-full bg-indigo-500 text-white flex items-center justify-center text-xs font-bold">JD</div>
+            <div class="flex-1">
+              <p class="text-sm font-semibold text-gray-800">Jordan</p>
+              <p class="text-xs text-gray-400">jordan@email.com</p>
+            </div>
+            <span class="text-[10px] bg-indigo-500 text-white rounded-full px-2.5 py-0.5 font-semibold">You</span>
+          </div>
+
+          <!-- Jordan (Pending) -->
+          <div class="flex items-center gap-3 bg-amber-50 rounded-xl px-4 py-3 border border-amber-200">
+            <div class="w-9 h-9 rounded-full bg-amber-400 text-white flex items-center justify-center text-xs font-bold">JO</div>
+            <div class="flex-1">
+              <p class="text-sm font-semibold text-gray-800">Jordan M.</p>
+              <p class="text-xs text-gray-400">jordanm@email.com</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] bg-amber-200 text-amber-700 rounded-full px-2.5 py-0.5 font-medium flex items-center gap-1">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Pending
+              </span>
+              <button class="text-gray-300 hover:text-red-400 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Priya (Pending) -->
+          <div class="flex items-center gap-3 bg-amber-50 rounded-xl px-4 py-3 border border-amber-200">
+            <div class="w-9 h-9 rounded-full bg-teal-400 text-white flex items-center justify-center text-xs font-bold">PR</div>
+            <div class="flex-1">
+              <p class="text-sm font-semibold text-gray-800">Priya</p>
+              <p class="text-xs text-gray-400">priya@email.com</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] bg-amber-200 text-amber-700 rounded-full px-2.5 py-0.5 font-medium flex items-center gap-1">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Pending
+              </span>
+              <button class="text-gray-300 hover:text-red-400 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add Member Input -->
+        <div class="flex items-center gap-2">
+          <div class="relative flex-1">
+            <svg class="w-4 h-4 text-gray-300 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            <input
+              type="email"
+              class="w-full bg-gray-50 rounded-xl pl-10 pr-4 py-3 text-sm text-gray-800 border border-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-300 placeholder-gray-300"
+              placeholder="roommate@email.com"
+            />
+          </div>
+          <button class="bg-indigo-500 hover:bg-indigo-600 text-white p-3 rounded-xl shadow-sm transition flex-shrink-0">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div class="border-t-2 border-dashed border-indigo-100 my-6"></div>
+
+      <!-- Shareable Invite Link -->
+      <div>
+        <label class="font-sketch text-lg text-indigo-900 mb-2 block">Or share invite link</label>
+        <p class="text-xs text-gray-400 mb-3">Anyone with this link can join your household</p>
+        <div class="flex items-center gap-2">
+          <div class="flex-1 bg-gray-50 rounded-xl px-4 py-3 border border-indigo-100 flex items-center gap-2 overflow-hidden">
+            <svg class="w-4 h-4 text-indigo-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+            <span class="text-xs text-gray-500 truncate">roomietab.app/invite/maple-house-x7k2</span>
+          </div>
+          <button onclick="copyLink(this)" class="bg-teal-500 hover:bg-teal-600 text-white px-4 py-3 rounded-xl text-xs font-semibold shadow-sm transition flex-shrink-0 flex items-center gap-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+            Copy
+          </button>
+        </div>
+      </div>
+
+      <!-- Create Household CTA -->
+      <button class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold text-base py-4 rounded-2xl shadow-lg shadow-indigo-200 transition flex items-center justify-center gap-2 mt-8">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1h-2z"/></svg>
+        Create Household
+      </button>
+
+      <!-- Skip for now -->
+      <p class="text-center mt-3">
+        <a href="dashboard.html" class="text-xs text-gray-400 hover:text-indigo-500 transition">Skip for now, invite later</a>
+      </p>
+
+    </div>
+
+    <!-- Help Text -->
+    <div class="text-center mt-6">
+      <div class="inline-flex items-center gap-2 bg-white/70 backdrop-blur-sm rounded-xl px-4 py-2 border border-indigo-100">
+        <svg class="w-4 h-4 text-indigo-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"/></svg>
+        <span class="text-xs text-gray-500">Members can be added or removed anytime from Settings</span>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function copyLink(btn) {
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg> Copied!';
+      btn.classList.remove('bg-teal-500', 'hover:bg-teal-600');
+      btn.classList.add('bg-emerald-500');
+      setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.classList.remove('bg-emerald-500');
+        btn.classList.add('bg-teal-500', 'hover:bg-teal-600');
+      }, 2000);
+    }
+  </script>
+
+</body>
+</html>
